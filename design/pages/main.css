@@ -76,6 +76,17 @@
     border-radius: 50%;
 }
 
+.community-name.red{
+    color: red;
+}
+
+.community-name.yellow{
+    color: yellow;
+}
+
+.community-name.green{
+    color: green;
+}
 /*  */
 
 .posts-container {
