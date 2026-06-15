@@ -1,29 +1,30 @@
-import { saveArrayToStorage, getArrayFromStorage} from '../javascript/helper.js'
+import { saveArrayToStorage, getArrayFromStorage } from '../javascript/helper.js'
 import { showToast, hideToast } from './toast.js'
 
 document.addEventListener("DOMContentLoaded", Main)
 const radios = document.querySelectorAll('input[name="sort"]');
 
 document.querySelector(".create-post-btn")
-  .addEventListener("click", createPost);
+    .addEventListener("click", createPost);
 
 document.addEventListener("click", (e) => {
-  const removeBtn = e.target.closest(".remove-post-btn");
-  if (removeBtn) {
-    deletePost(removeBtn.dataset.id);
-  }
+    const removeBtn = e.target.closest(".remove-post-btn");
+    if (removeBtn) {
+        deletePost(removeBtn.dataset.id);
+    }
 
-  const likeBtn = e.target.closest(".like-btn");
-  if (likeBtn) {
-    likePost(likeBtn.dataset.id);
-  }
+    const likeBtn = e.target.closest(".like-btn");
+    if (likeBtn) {
+        likePost(likeBtn.dataset.id);
+    }
 });
 
 radios.forEach(radio => {
-  radio.addEventListener("change", (e) => {
-    alterPosts(e.target.value);
-  });
+    radio.addEventListener("change", (e) => {
+        alterPosts(e.target.value);
+    });
 });
+
 
 let sortMethod = "none"
 
@@ -158,9 +159,17 @@ const users = [{
     birthday: 1021669200000, profilePicURL: "../design/images/profile pictures/man_2.jpg", userType: "feeder", feedingStations: [{ _id: 1, status: "owner" }], posts: []
 }]
 
-const chats = [{_id:1, chatName: "tuxedo owners", chatLogo:"", chatters:["1","3"], 
-                messages:[{_id:"1",text:"hey"},{_id:"3",text:"hey"},{_id:"1",text:"how are you doing?"}],
-                createdAt:1767564832000}]
+const chats = [{
+    _id: "1", chatName: "tuxedo owners", chatLogo: "", chatters: ["1", "3"],
+    messages: [{ _id: "1", text: "hey" }, { _id: "3", text: "hey" }, { _id: "1", text: "how are you doing?" }],
+    createdAt: 1767564832000
+}]
+
+const communities = [{
+    _id: "1", communityName: "meowers", communityLogo: "",
+    communityBakcground: "", ownerId: "", moderators: [],
+    members: ["4"], posts: ["2", "5"], createdAt: 1767564832000
+}]
 
 let postsForRender = posts.filter(p => true)
 
@@ -169,6 +178,7 @@ let userId = "4" // in this case
 function Main() {
     //renderPosts()
     updateMainContent()
+    renderCommunities()
 }
 
 function renderPosts(list = postsForRender) { // function that renders updates posts
@@ -223,6 +233,53 @@ function renderPosts(list = postsForRender) { // function that renders updates p
         }).
             join("")
     }
+}
+
+function renderCommunities() {
+    const container = document.querySelector(".communities-box")
+
+    const userCommunities = communities.filter(c =>
+        c.ownerId === userId ||
+        c.moderators.includes(userId) ||
+        c.members.includes(userId)
+    )
+
+    if (userCommunities.length === 0) {
+        container.innerHTML = `
+      <div class="community-empty">
+        Join a community now
+      </div>`
+        return
+    }
+
+    container.innerHTML = userCommunities.map(c => {
+        const role = getUserRole(c, userId)
+
+        let roleClass = ""
+        const logo = c.communityLogo ? c.communityLogo : "../design/images/cat-svg.svg";
+
+        if (role === "owner") roleClass = "red"
+        else if (role === "moderator") roleClass = "yellow"
+        else if (role === "member") roleClass = "green"
+
+        return `
+                <div class="community">
+                    <a href="../htmls/community.html?id=${c._id}" class="community-logo">
+                        <img src="${logo}" />
+                    </a>
+                    <span class="community-name ${roleClass}">
+                        ${c.communityName}
+                    </span>
+                </div>
+        `
+    }).join("")
+}
+
+function getUserRole(community, userId) {
+    if (community.ownerId === userId) return "owner"
+    if (community.moderators.includes(userId)) return "moderator"
+    if (community.members.includes(userId)) return "member"
+    return null
 }
 
 function getTimeAgo(timestamp) {
@@ -344,30 +401,32 @@ function createPost() {
     const actualPostTitle = postTitle.value
     const actualPostDescription = postDescription.value
     if (actualPostTitle === "") {
-        showToast(`you forgot title you stupid`,"main");
+        showToast(`you forgot title you stupid`, "main");
         return
     }
     if (actualPostDescription === "") {
-        showToast(`you forgot description you stupid`,"main");
+        showToast(`you forgot description you stupid`, "main");
         return
     }
     //console.log(`postTitle: ${actualPostTitle} | postDescription: ${actualPostDescription}`)
-    const newPost = {_id: generateId(), _userid:userId, title:actualPostTitle, description:actualPostDescription, 
-                     mediaType:"none", mediaUrl:"", likedByUsers:[], createdAt: Date.now()}
+    const newPost = {
+        _id: generateId(), _userid: userId, title: actualPostTitle, description: actualPostDescription,
+        mediaType: "none", mediaUrl: "", likedByUsers: [], createdAt: Date.now()
+    }
     postTitle.value = ""
     postDescription.value = ""
     posts.push(newPost)
     saveArrayToStorage('posts', posts);
     postsForRender = posts.filter(p => true)
     sortMethod = "none"
-    showToast(`created new post with id : [${newPost._id}]`,"main");
+    showToast(`created new post with id : [${newPost._id}]`, "main");
     updateMainContent()
     alterPosts()
 }
 
-function deletePost(postId = ""){
-    if(postId === ""){
-        showToast(`there is no post in ba sing se`,"main");
+function deletePost(postId = "") {
+    if (postId === "") {
+        showToast(`there is no post in ba sing se`, "main");
         return
     }
     const post = posts.find(post => post._id === postId)
@@ -375,16 +434,16 @@ function deletePost(postId = ""){
     // console.log("posts: ")
     // console.log(posts)
     // console.log("post: "+post)
-    if(post._userid !== userId){
-        showToast(`this aint your post boy!`,"main");
+    if (post._userid !== userId) {
+        showToast(`this aint your post boy!`, "main");
         return
-    } 
+    }
     posts = posts.filter(post => post._id !== postId)
     saveArrayToStorage('posts', posts)
     postsForRender = posts.filter(p => true)
     sortMethod = "none"
     updateMainContent()
-    showToast(`deleted post with id : [${postId}]`,"main");
+    showToast(`deleted post with id : [${postId}]`, "main");
 }
 
 function generateId(length = 16) {
