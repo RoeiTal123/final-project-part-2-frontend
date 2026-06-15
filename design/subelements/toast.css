@@ -1,0 +1,70 @@
+.notification-modal-box {
+  position: fixed;
+  top: 10vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+
+  width: fit-content;
+  max-width: 80vw;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  pointer-events: none; /* important */
+}
+
+/* visible */
+.notification-modal-box.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* removed hide class entirely */
+/* inner layout */
+.toast-content {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* close button */
+.toast-close {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.toast {
+  background: #222;
+  color: white;
+
+  padding: 16px;
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  opacity: 0;
+  transform: translateY(-10px);
+
+  transition: transform 0.3s ease, opacity 0.3s ease;
+
+  pointer-events: auto; /* important so you can click X */
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.hide {
+  opacity: 0;
+  transform: translateY(-10px);
+}

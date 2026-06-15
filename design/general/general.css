@@ -1,0 +1,202 @@
+@import "../subelements/toast.css";
+
+@font-face {
+    font-family: "flower";
+    src: url("../general/IndieFlower-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+:root {
+    --main-font: "flower", sans-serif;
+    --primary-color: #e46b00;
+    --accent-color: #F5B277;
+    --blue-one: #BAE9EB;
+    --blue-two: #007bff;
+    --blue-three: #5BC6E4;
+    --blue-four: #A4DAFB;
+    --brown-one: #844A03;
+    --brown-two: #EFE1CF;
+    --green-one: #BBFFAB;
+    --green-two: #9BE18B;
+    --green-three: #7EF684;
+    --gray-one: #D9D9D9;
+    --gray-two: #F2EDE8;
+    --gray-three: #615F5F;
+    --red-one: #DE7E7E;
+    --red-two: #ff0000;
+    --white: #FFFFFF;
+    --black: #000000;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: var(--main-font);
+}
+
+.root {
+    width: 100%;
+    overflow: auto;
+    font-size: 16px;
+}
+
+html {
+    display: flex;
+    flex-direction: column;
+    flex-grow: unset;
+    font-size: 16px;
+    width: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    font-size: 16px;
+    overflow-y: hidden;
+    overflow: hidden;
+}
+
+img {
+    height: 100%;
+    aspect-ratio: unset;
+}
+
+textarea{
+    resize: none;
+}
+
+@media (min-width: 760px) {
+    .header {
+        display: flex;
+    }
+
+    .header-mobile {
+        display: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .header {
+        display: none;
+    }
+
+    .header-mobile {
+        display: flex;
+    }
+}
+
+
+.header {
+    flex-direction: row;
+    justify-content: space-between;
+    height: 96px;
+    width: 100%;
+    padding: 16px;
+    background-color: var(--accent-color);
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 4em;
+    width: 4em;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, var(--blue-one) 0%, var(--blue-three) 100%);
+}
+
+.logo-img {
+    height: 50px;
+}
+
+.on-right {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+}
+
+.profile-button .profile-logo{
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+}
+
+.map-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 64px;
+    width: 64px;
+    border: 0;
+    background: linear-gradient(to bottom, var(--green-one) 0%, var(--green-two) 100%);
+
+}
+
+.map-logo {
+    height: 50px;
+}
+
+.body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-grow: 1;
+    height: 100%;
+    width: 100%;
+    background-image: url(../images/Background.png);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.modal-overlay {
+    display: none;          /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6); /* Black with 60% transparency */
+    z-index: 9999;          /* High number ensures it sits above the map and header */
+    justify-content: center;
+    align-items: center;
+}
+
+/* The Actual Popup Box */
+.modal-window {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 640px;
+    width: 90%;
+    padding: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 4px solid var(--brown-one);
+    background-color: var(--brown-two);
+}
+
+.header-mobile{
+    flex-direction: row;
+    justify-content: space-between;
+    height: 96px;
+    background-color: var(--accent-color);
+    z-index: 1000;
+}
+
+.header-mobile .button-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% / 3);
+}
+
+.button-box .profile-logo{
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+}

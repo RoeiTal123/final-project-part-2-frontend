@@ -1,0 +1,139 @@
+@import "../general/general.css";
+
+body, .body, .login-window, fieldset, legend, label {
+  user-select: none;
+  cursor: default;
+}
+
+input[type="text"], input[type="tel"], input[type="email"] {
+  user-select: text;
+  cursor: text;
+}
+
+.body {
+  display: flex;         
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;     
+  height: auto;
+}
+
+section {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border-style: hidden;
+}
+
+h1{
+    text-decoration: underline var(--accent-color);
+}
+
+.login-window {
+  background: rgba(255, 255, 255, 0.1); 
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  transition: width 0.2s ease, transform 0.1s ease;
+}
+
+@media (min-width: 1024px){
+    .login-window{
+      padding: 20px;
+      width: 40%;
+    }
+}
+
+@media (max-width: 1024px){
+    .login-window{
+      padding: 20px;
+      width: 60%;
+    }
+}
+
+@media (max-width: 760px){
+    .login-window{
+      width: 100%;
+    }
+}
+
+.input{
+  width: 100%;
+  box-sizing: border-box;
+  border: none; 
+  border-bottom: 2px solid var(--accent-color);
+  transition: border-bottom 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.input:hover{
+  border: none; 
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.input:focus{
+  outline: none;
+  border-bottom: 2px solid var(--primary-color);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.textarea-container {
+  position: relative;
+  width: 100%;
+}
+
+.textarea-box {
+  height: auto;
+  resize: vertical; 
+}
+
+.word-counter {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  font-size: 11px;
+  color: var(--primary-color);
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+}
+
+.submit-btn {
+  background-color: var(--primary-color);
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease; 
+}
+
+.submit-btn:hover {
+  background-color: var(--accent-color); 
+  color: var(--primary-color);           
+}
+
+.submit-btn:active {
+  transform: scale(0.95);    
+}
+
+.hidden {
+    display: none;
+}
+
+.toggle-container {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.toggle-container a {
+    color: var(--blue-two);
+    text-decoration: none;
+}
+
+.toggle-container a:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,113 @@
+@import "../general/general.css";
+
+.map-container{
+    flex-grow: 1;
+    width: 100%;
+    overflow: hidden;
+    cursor: grab;
+}
+
+.map-container:active {
+  cursor: grabbing;     /* Changes cursor when holding down */
+}
+
+.map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    user-select: none;
+    width: 400%;
+    height: 400%;
+    
+    object-fit: cover;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.modal-header{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.modal-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 220px 220px;
+    row-gap: 16px;
+    column-gap: 16px;
+    height: 480px;
+}
+
+.location-description{
+    grid-row: span 2;
+    height: 100%;
+    background-color: var(--gray-one);
+    border: 0;
+}
+
+.file-input{
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--gray-two);
+}
+
+.file-input-button{
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.modal-grid label{
+    display: flex;
+    justify-content: center;
+}
+
+label .svg{
+    width: 40%;
+    height: auto;
+}
+
+label .svg:hover{
+    cursor: pointer;
+}
+
+.feeder-list-box{
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background-color: var(--gray-one);
+}
+
+.feeder-list-box .feeder-list{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.modal-buttons .cancel-button{
+    display: flex;
+    background-color: var(--red-one);
+}
+
+.modal-buttons .confirm-button{
+    display: flex;
+    background-color: var(--green-three);
+}

@@ -1,0 +1,109 @@
+<html>
+
+<head>
+    <title>Cat Sanctuary</title>
+    <link rel="stylesheet" href="../design/pages/main.css">
+</head>
+<script type="module" src="../javascript/main.js" defer></script>
+
+<body>
+    <header class="header">
+        <a a href="../htmls/main.html" class="logo"><img class="logo-img" src="../design/images/image.png" /></a>
+        <div class="on-right">
+            <a href="../htmls/map.html" class="map-button">
+                <img class="map-logo" src="../design/images/image.png" />
+            </a>
+            <a href="../htmls/profile.html" class="profile-button">
+                <img class="profile-logo" src="../design/images/profile pictures/man_2.jpg" />
+            </a>
+        </div>
+    </header>
+    <div class="body">
+        <div class="cat-communities-box">My Communities
+            <div class="communities-box">
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name1</span>
+                </div>
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name2</span>
+                </div>
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name3</span>
+                </div>
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name1</span>
+                </div>
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name2</span>
+                </div>
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name3</span>
+                </div>
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name1</span>
+                </div>
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name2</span>
+                </div>
+                <div class="community">
+                    <a href="../htmls/community.html" class="community-logo"></a>
+                    <span class="community-name">name3</span>
+                </div>
+            </div>
+        </div>
+        <div class="cat-posts-box">
+            <div class="post-filter" id="post-filter">
+                <label><input type="radio" name="sort" value="new"> New</label>
+                <label><input type="radio" name="sort" value="old"> Old</label>
+                <label><input type="radio" name="sort" value="day"> Day</label>
+                <label><input type="radio" name="sort" value="week"> Week</label>
+                <label><input type="radio" name="sort" value="month"> Month</label>
+            </div>
+            <div class="post-creation-box">
+                <div class="post-header">
+                    <img class="input-post-profile-picture" id="input-post-profile-picture" />
+                    <input type="text" class="input-post-title" id="post-title-input" placeholder="post-title" />
+                </div>
+                <textarea class="input-post-description" id="post-descrption-input"
+                    placeholder="post-description"></textarea>
+                <input type="file" class="input-post-media" id="post-media-input" />
+                <div class="example-media">media will be here</div>
+                <button class="create-post-btn">add post</button>
+            </div>
+            <div class="posts-container" id="posts-container">
+            </div>
+        </div>
+        <div class="cat-chats-box">chats here</div>
+    </div>
+    <footer class="header-mobile">
+        <a a href="../htmls/main.html" class="button-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64px" height="64px" viewBox="0 0 24 24" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                    d="M12.6139 1.21065C12.2528 0.929784 11.7472 0.929784 11.3861 1.21065L2.38606 8.21065C2.14247 8.4001 2 8.69141 2 9V20C2 21.1046 2.89543 22 4 22H20C21.1046 22 22 21.1046 22 20V9C22 8.69141 21.8575 8.4001 21.6139 8.21065L12.6139 1.21065ZM16 20H20V9.48908L12 3.26686L4 9.48908V20H8V12C8 11.4477 8.44772 11 9 11H15C15.5523 11 16 11.4477 16 12V20ZM10 20V13H14V20H10Z"
+                    fill="var(--black)" />
+            </svg>
+        </a>
+        <a href="../htmls/map.html" class="button-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64px" height="64px" viewBox="0 0 24 24" fill="none">
+                <path
+                    d="M12 6H12.01M9 20L3 17V4L5 5M9 20L15 17M9 20V14M15 17L21 20V7L19 6M15 17V14M15 6.2C15 7.96731 13.5 9.4 12 11C10.5 9.4 9 7.96731 9 6.2C9 4.43269 10.3431 3 12 3C13.6569 3 15 4.43269 15 6.2Z"
+                    stroke="var(--black)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </a>
+        <a href="../htmls/profile.html" class="button-box">
+            <img class="profile-logo" src="../design/images/profile pictures/man_2.jpg" />
+        </a>
+    </footer>
+    <div class="notification-modal-box" id="modal-main"></div>
+</body>
+<!-- <img src="../design/images/cat images/DSC_6822.jpg"> -->
+
+</html>

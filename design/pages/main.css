@@ -1,0 +1,268 @@
+@import "../general/general.css";
+
+@media (min-width: 1024px) {
+    .cat-communities-box {
+        display: flex;
+    }
+
+    .cat-chats-box {
+        display: flex;
+    }
+
+    .cat-posts-box {
+        width: 40%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .cat-communities-box {
+        display: none;
+    }
+
+    .cat-chats-box {
+        display: none;
+    }
+
+    .cat-posts-box {
+        width: 60%;
+    }
+
+    .body {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 760px) {
+    .cat-communities-box {
+        display: none;
+    }
+
+    .cat-chats-box {
+        display: none;
+    }
+
+    .cat-posts-box {
+        width: 100%;
+    }
+}
+
+.cat-communities-box {
+    flex-direction: column;
+    height: calc(100vh - 96px);
+    width: 25%;
+    min-width: 210px;
+    padding: 16px;
+    gap: 16px;
+    overflow-y: auto;
+    scrollbar-color: lightgray white;
+}
+
+.cat-communities-box .communities-box {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.communities-box .community {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.community .community-logo {
+    height: 64px;
+    width: 64px;
+    background-color: rgb(209, 32, 200);
+    border-radius: 50%;
+}
+
+/*  */
+
+.posts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+}
+
+.post-filter{
+    display: flex;
+    margin-block-start: 16px;
+    gap: 16px;
+}
+
+.cat-posts-box {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 96px);
+    min-width: 360px;
+    gap: 32px;
+    overflow-y: auto;
+    scrollbar-color: lightgray var(--white);
+
+    scrollbar-width: none;
+
+    /* Hide scrollbar for IE, Edge Legacy, and Opera */
+    -ms-overflow-style: none;
+}
+
+.cat-posts-box .post-box {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 16px;
+    background: linear-gradient(to bottom, var(--white) 0%, var(--blue-four) 100%);
+}
+
+.post-box .post-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 16px;
+    height: fit-content;
+}
+
+.post-header .post-user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 64px;
+    width: 64px;
+}
+
+.post-user img {
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+}
+
+.post-header .post-header-right {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.post-header-right .left {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.post-header-right .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.right .remove-post-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 16px;
+    width: 16px;
+    border: 0;
+    background-color: transparent;
+}
+
+.post-box .post-description {
+    padding: 0 16px 16px 16px;
+}
+
+.post-box .post-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex: 1;
+    max-height: 280px;
+}
+
+
+.post-media .post-image,
+.post-video {
+    width: 100%;
+    max-height: 280px;
+    object-fit: contain;
+    background-color: black;
+}
+
+
+.post-box .post-footer {
+    display: flex;
+    flex-direction: row;
+    border-block-start: 1px solid black;
+    padding: 16px;
+    gap: 16px;
+    border-radius: 0 0 16px 16px;
+    background-color: var(--white);
+}
+
+.like-btn:hover {
+    cursor: pointer;
+}
+
+.cat-chats-box {
+    width: 25%;
+    min-width: 210px;
+}
+
+.post-creation-box{
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    width: 100%;
+    border: 1px solid black;
+    border-radius: 16px;
+    background: linear-gradient(to bottom, var(--white) 0%, var(--blue-four) 100%);
+    height: 450px;
+}
+
+.post-creation-box .post-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+}
+
+.input-post-title{
+    height: fit-content;
+    flex: 0.5;
+}
+
+.input-post-profile-picture{
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+}
+
+.input-post-description{
+    flex: 1;
+    margin: 16px;
+}
+
+.input-post-media{
+    margin: 16px;
+}
+
+.example-media{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex: 1;
+    max-height: 280px;
+}
+
+.create-post-btn{
+    display: flex;
+    align-self: center;
+    margin: 16px;
+    width: fit-content;
+}
