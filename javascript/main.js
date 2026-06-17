@@ -1,6 +1,6 @@
 import { saveArrayToStorage, getArrayFromStorage } from '../javascript/helper.js'
 import { showToast, hideToast } from './toast.js'
-import { createPost, deletePost, toggleLike, query } from './post.js'
+import { createPost, deletePost, toggleLike, query, queryFromBackend } from './post.js'
 
 document.addEventListener("DOMContentLoaded", Main)
 const radios = document.querySelectorAll('input[name="sort"]');
@@ -182,6 +182,7 @@ function Main() {
     //renderPosts()
     updateMainContent()
     renderCommunities()
+    queryFromBackend()
 }
 
 export function renderPosts(list) { // function that renders updates posts

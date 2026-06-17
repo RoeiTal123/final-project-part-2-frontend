@@ -1,0 +1,28 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RoeiTal123/final-project-part-2-frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/RoeiTal123/final-project-part-2-frontend/issues"
+  },
+  "homepage": "https://github.com/RoeiTal123/final-project-part-2-frontend#readme",
+  "dependencies": {
+    "axios": "^1.18.0"
+  },
+  "devDependencies": {
+    "vite": "^8.0.16"
+  }
+}

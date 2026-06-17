@@ -1,7 +1,7 @@
 import { showToast } from './toast.js'
 import { generateId } from './helper.js'
 import { saveArrayToStorage, getArrayFromStorage } from '../javascript/helper.js'
-
+import axios from 'axios'
 
 let defaultPosts = [
     {
@@ -175,6 +175,21 @@ export function query(value) {
     cache.result = result;
 
     return result;
+}
+
+export async function queryFromBackend(value = "") {
+    try {
+        const res = await axios.get("http://localhost:3000/posts", {
+            params: { sort: value }
+        });
+
+        console.log("🔥 BACKEND POSTS:", res.data);
+        return res.data;
+
+    } catch (err) {
+        console.log("❌ Backend query failed:", err);
+        return null;
+    }
 }
 
 // =====================
