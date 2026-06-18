@@ -183,7 +183,7 @@ function Main() {
     updateMainContent()
     renderCommunities()
     queryFromBackend()
-    postByIdFromBackend("1")
+    postByIdFromBackend("5")
 }
 
 export function renderPosts(list) { // function that renders updates posts

@@ -194,8 +194,8 @@ export async function queryFromBackend(value = "") {
 
 export async function postByIdFromBackend(value = "") {
     try {
-        const res = await axios.get("http://localhost:3000/api/posts/:id", {
-            params: { sort: value }
+        const res = await axios.get(`http://localhost:3000/api/posts/${value}`, {
+            params: { postid: value }
         });
 
         console.log("🔥 BACKEND POSTS:", res.data);
