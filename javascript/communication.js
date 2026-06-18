@@ -1,16 +1,16 @@
-import Axios from 'axios'
+import Axios from 'axios' // Make request to URL
 
-const BASE_URL =
+const BASE_URL =                              // Search this URL
     window.location.hostname === 'localhost'
         ? 'http://localhost:3000/api/'
         : '/api/'
 
 
-var axios = Axios.create({
+var axios = Axios.create({ // Creating a request
     withCredentials: true
 })
 
-export const httpService = {
+export const httpService = { // Our methods of communication (Titles)
     get(endpoint, data) {
         return ajax(endpoint, 'GET', data)
     },
@@ -25,7 +25,7 @@ export const httpService = {
     }
 }
 
-async function ajax(endpoint, method = 'GET', data = null) {
+async function ajax(endpoint, method = 'GET', data = null) { //The functions themselfs
     try {
         const res = await axios({
             url: `${BASE_URL}${endpoint}`,
