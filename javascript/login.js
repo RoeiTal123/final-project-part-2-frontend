@@ -1,12 +1,16 @@
+import { showToast } from "./toast";
+import { loginUserWithBackend } from "./user.js"; // Import the login client function
+
 document.addEventListener("DOMContentLoaded", Main)
 
-const DUMMY_USER = {
-    username: "catlover123",
-    password: "password123"
-};
-
 function Main () {
-    
+    const loginForm = document.getElementById("loginForm");
+    if (loginForm) {
+        loginForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            submitLoginForm();
+        });
+    }
 }
 
 function showSignup(event) {
@@ -52,30 +56,90 @@ function countLetters(textarea) {
     display.textContent = `${letterCount}/${maxLetters}`;
 }
 
-function submitLoginForm() {
-    const form = document.getElementById('loginForm');
-    if (!form.checkValidity()) {
-        form.reportValidity();
+async function submitLoginForm() {
+    const usernameEl = document.getElementById("login-username");
+    const passwordEl = document.getElementById("login-password");
+
+    if (!usernameEl || !passwordEl) {
+        showToast("Login fields missing from HTML template", "main");
         return;
     }
-    const usernameInput = document.getElementById('login-username').value;
-    const passwordInput = document.getElementById('login-password').value;
 
-    if (usernameInput === DUMMY_USER.username && passwordInput === DUMMY_USER.password) {
-        console.log("Login form submitted successfully!");
-        window.location.href = "main.html";
-    } 
-    else {
-        alert("Invalid username or password. Please try again.");
+    const username = usernameEl.value.trim();
+    const password = passwordEl.value.trim();
+
+    if (!username || !password) {
+        showToast("Please enter your username and password", "main");
+        return;
+    }
+
+    const userResult = await loginUserWithBackend(username, password);
+
+    if (userResult) {
+        const currentUser = Array.isArray(userResult) ? userResult[0] : userResult;
+
+        if (!currentUser) {
+            showToast("Invalid username or password", "main");
+            return;
+        }
+
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+        
+        showToast(`Welcome back, ${currentUser.username}!`, "main");
+        
+        setTimeout(() => {
+            window.location.href = "main.html";
+        }, 1000);
+    } else {
+        showToast("Invalid username or password", "main");
     }
 }
 
-function submitSignupForm() {
-    const form = document.getElementById('signupForm');
-    if (!form.checkValidity()) {
-        form.reportValidity();
+
+async function submitSignupForm() {
+    // 1. Gather all document input fields
+    const fnameEl = document.getElementById("fname");
+    const lnameEl = document.getElementById("lname");
+    const phoneEl = document.getElementById("phone");
+    const emailEl = document.getElementById("email");
+    const usernameEl = document.getElementById("signup-username");
+    const passwordEl = document.getElementById("signup-password");
+    const dobEl = document.getElementById("dob");
+    const catLikesEl = document.getElementById("cat-likes");
+
+    // 2. Client-side validation check
+    if (!fnameEl.value || !lnameEl.value || !phoneEl.value || !emailEl.value || 
+        !usernameEl.value || !passwordEl.value || !dobEl.value || !catLikesEl.value) {
+        showToast("Please fill in all signing up fields", "main");
         return;
     }
-    console.log("Signup form submitted successfully!");
-    window.location.href = "main.html";
+
+    // 3. Construct payload object payload matching backend expectations
+    const userData = {
+        fname: fnameEl.value.trim(),
+        lname: lnameEl.value.trim(),
+        phone: phoneEl.value.trim(),
+        email: emailEl.value.trim(),
+        username: usernameEl.value.trim(),
+        password: passwordEl.value.trim(),
+        dob: dobEl.value,
+        catLikes: catLikesEl.value.trim()
+    };
+
+    // 4. Send request through your API layer (user.js) which hits httpService
+    const result = await addUserToBackend(userData);
+
+    if (result && result.userId) {
+        showToast("Account created successfully! Please log in.", "main");
+        
+        // 5. Clean form inputs
+        document.getElementById("signupForm").reset();
+        document.getElementById("word-count-display").textContent = "0/1000";
+
+        // 6. Automatically toggle UI views back to login window pane
+        // Simulated click action to reuse your custom interface toggle routing layout
+        showLogin(new Event('click'));
+    } else {
+        showToast("Failed to register account. Try again.", "main");
+    }
 }
