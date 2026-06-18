@@ -1,18 +1,18 @@
-import { saveArrayToStorage, getArrayFromStorage } from '../javascript/helper.js'
+import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp } from '../javascript/helper.js'
 import { showToast, hideToast } from './toast.js'
-import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend } from './post.js'
+import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend } from './post.js'
 
 document.addEventListener("DOMContentLoaded", Main)
 const radios = document.querySelectorAll('input[name="sort"]');
 
 document.querySelector(".create-post-btn")
     .addEventListener("click", () => {
-        createPost();
+        createPostAndPutInBackend();
 
         const currentSort =
             new URLSearchParams(window.location.search).get("sort") || "new";
 
-        renderPosts(query(currentSort));
+        renderPosts(queryFromBackend(currentSort));
     });
 
 document.addEventListener("click", (e) => {
@@ -24,36 +24,36 @@ document.addEventListener("click", (e) => {
         const currentSort =
             new URLSearchParams(window.location.search).get("sort") || "new";
 
-        renderPosts(query(currentSort));
+        renderPosts(queryFromBackend(currentSort));
     }
 });
 
 radios.forEach(radio => {
-    radio.addEventListener("change", (e) => {
+    radio.addEventListener("change", async (e) => {
         const value = e.target.value;
 
         handleSortChange(value);
 
-        const postsToRender = query(value);
+        const postsToRender = await queryFromBackend(value);
         renderPosts(postsToRender);
     });
 });
 
 
 const users = [{
-    _id: "1", username: "moshe", password: "moshedat", fullname: "moshe perets", mail: "moshe@dat.com", createdAt: 1778841205000,
+    _id: 1, username: "moshe", password: "moshedat", fullname: "moshe perets", mail: "moshe@dat.com", createdAt: 1778841205000,
     birthday: 1021669200000, profilePicURL: "../design/images/profile pictures/man_1.avif", userType: "feeder", feedingStations: [{ _id: 1, status: "owner" }], posts: ["1", "4", "7", "10"]
 },
 {
-    _id: "2", username: "rebecca", password: "beccabec", fullname: "rebecca black", mail: "reb@becca.com", createdAt: 1778841205000,
+    _id: 2, username: "rebecca", password: "beccabec", fullname: "rebecca black", mail: "reb@becca.com", createdAt: 1778841205000,
     birthday: 1021669200000, profilePicURL: "../design/images/profile pictures/woman_1.avif", userType: "user", feedingStations: [], posts: ["2", "5", "8"]
 },
 {
-    _id: "3", username: "princess", password: "royalty", fullname: "princess dorothy", mail: "princess@cess.com", createdAt: 1778841205000,
+    _id: 3, username: "princess", password: "royalty", fullname: "princess dorothy", mail: "princess@cess.com", createdAt: 1778841205000,
     birthday: 1021669200000, profilePicURL: "../design/images/profile pictures/woman_2.jpg", userType: "moderator", feedingStations: [], posts: ["3", "6", "9"]
 },
 {
-    _id: "4", username: "breado", password: "bread123", fullname: "breado bread", mail: "bread@b.com", createdAt: 1778841205000,
+    _id: 4, username: "breado", password: "bread123", fullname: "breado bread", mail: "bread@b.com", createdAt: 1778841205000,
     birthday: 1021669200000, profilePicURL: "../design/images/profile pictures/man_2.jpg", userType: "feeder", feedingStations: [{ _id: 1, status: "owner" }], posts: []
 }]
 
@@ -65,125 +65,125 @@ const chats = [{
 
 const communities = [
     {
-        _id: "1",
+        _id: 1,
         communityName: "Meower Haven",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "1",
-        moderators: ["2"],
-        members: ["1", "2", "4"],
-        posts: ["1", "3"],
+        ownerId: 1,
+        moderators: [2],
+        members: [1, 2, 4],
+        posts: [1, 3],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 10
     },
     {
-        _id: "2",
+        _id: 2,
         communityName: "Purrfect Coders",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "4",
-        moderators: ["1", "3"],
-        members: ["4", "1", "3"],
-        posts: ["2", "4", "5"],
+        ownerId: 4,
+        moderators: [1, 3],
+        members: [4, 1, 3],
+        posts: [2, 4, 5],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 200
     },
     {
-        _id: "3",
+        _id: 3,
         communityName: "Whisker Warriors",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "2",
+        ownerId: 2,
         moderators: [],
-        members: ["2", "3"],
-        posts: ["6"],
+        members: [2, 3],
+        posts: [6],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 400
     },
     {
-        _id: "4",
+        _id: 4,
         communityName: "Claw & Order",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "3",
-        moderators: ["4"],
-        members: ["3", "4"],
-        posts: ["7", "8"],
+        ownerId: 3,
+        moderators: [4],
+        members: [3, 4],
+        posts: [7, 8],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 600
     },
     {
-        _id: "5",
+        _id: 5,
         communityName: "Catnip Collective",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "1",
+        ownerId: 1,
         moderators: [],
-        members: ["1", "4"],
-        posts: ["9"],
+        members: [1, 4],
+        posts: [9],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 800
     },
     {
-        _id: "6",
+        _id: 6,
         communityName: "Feline Fitness Club",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "4",
+        ownerId: 4,
         moderators: [],
-        members: ["4"],
-        posts: ["10"],
+        members: [4],
+        posts: [10],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1000
     },
     {
-        _id: "7",
+        _id: 7,
         communityName: "Memeow Cinema",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "2",
-        moderators: ["4"],
-        members: ["2", "4"],
-        posts: ["1", "5"],
+        ownerId: 2,
+        moderators: [4],
+        members: [2, 4],
+        posts: [1, 5],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1100
     },
     {
-        _id: "8",
+        _id: 8,
         communityName: "Startup Cats",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "3",
-        moderators: ["1"],
-        members: ["3", "1"],
-        posts: ["2", "6"],
+        ownerId: 3,
+        moderators: [1],
+        members: [3, 1],
+        posts: [2, 6],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1200
     },
     {
-        _id: "9",
+        _id: 9,
         communityName: "Book of Paws",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "1",
-        moderators: ["2"],
-        members: ["1", "2"],
-        posts: ["3", "7"],
+        ownerId: 1,
+        moderators: [2],
+        members: [1, 2],
+        posts: [3, 7],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1500
     },
     {
-        _id: "10",
+        _id: 10,
         communityName: "Random Meowments",
         communityLogo: "",
         communityBakcground: "",
-        ownerId: "2",
+        ownerId: 2,
         moderators: [],
-        members: ["2", "3", "4"],
-        posts: ["4", "8", "9"],
+        members: [2, 3, 4],
+        posts: [4, 8, 9],
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 900
     }
 ]
 
-let userId = "4" // in this case
+let userId = 4 // in this case
 
 function Main() {
     //renderPosts()
     updateMainContent()
     renderCommunities()
-    queryFromBackend()
-    postByIdFromBackend("5")
+    // queryFromBackend()
+    // postByIdFromBackend("5")
 }
 
 export function renderPosts(list) { // function that renders updates posts
@@ -193,14 +193,14 @@ export function renderPosts(list) { // function that renders updates posts
     if (list != null) {
 
         postsContainer.innerHTML = list.map(post => {
-            const liked = isLiked(post._id, userId) // checks is each post is liked by the loggedin user
+            const liked = isLiked(post.id, userId) // checks is each post is liked by the loggedin user
 
-            const poster = users.find(user => user._id === post._userid)
+            const poster = users.find(user => user._id === post.user_id)
             // console.log(poster)
             return `
             <div class="post-box">
                 <div class="post-header">
-                           <a href="../htmls/profile.html?id=${post._userid}" class="post-user">
+                           <a href="../htmls/profile.html?id=${post.user_id}" class="post-user">
                            <img src="${poster.profilePicURL}" />
                            </a> 
                            <div class="post-header-right">
@@ -209,21 +209,21 @@ export function renderPosts(list) { // function that renders updates posts
                                <div class="post-title">${post.title}</div>
                            </div>
                            <div class="right">
-                           <div class="post-date">${getTimeAgo(post.createdAt)}</div>
-                           <button class="remove-post-btn" data-id="${post._id}">X</button>
+                           <div class="post-date">${getTimeAgo(SQLTimestampToTimestamp(post.created_at))}</div>
+                           <button class="remove-post-btn" data-id="${post.id}">X</button>
                            </div>
                            </div>
                        </div>
                        <div class="post-description">${post.description}</div>
-                       ${post.mediaType !== "none"
+                       ${post.media_type !== "none"
                     ? `<div class="post-media">
-                               ${post.mediaType === "image"
-                        ? `<img class="post-image" src="${post.mediaUrl}" />`
-                        : `<video class="post-video" controls src="${post.mediaUrl}"></video>`
+                               ${post.media_type === "image"
+                        ? `<img class="post-image" src="${post.media_url}" />`
+                        : `<video class="post-video" controls src="${post.media_url}"></video>`
                     }
                 </div>`: ""}
                 <div class="post-footer">
-                  <div class="like-btn" data-id="${post._id}">
+                  <div class="like-btn" data-id="${post.id}">
                     <svg viewBox="0 -2 24 24" height="24px" id="meteor-icon-kit__solid-heart" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--black)" stroke-width="${liked ? '0' : '0.24'}">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier">
@@ -243,10 +243,13 @@ export function renderPosts(list) { // function that renders updates posts
 function renderCommunities() {
     const container = document.querySelector(".communities-box")
 
-    const userCommunities = communities.filter(c =>
-        c.ownerId === userId ||
-        c.moderators.includes(userId) ||
-        c.members.includes(userId)
+    const userCommunities = communities.filter(c => {
+        return(
+            c.ownerId === userId ||
+            c.moderators.includes(userId) ||
+            c.members.includes(userId)
+        )
+    }
     )
 
     if (userCommunities.length === 0) {
@@ -379,17 +382,17 @@ function handleSortChange(selectedSort) {
     window.history.pushState({}, '', url)
 }
 
-function updateMainContent() {
+async function updateMainContent() {
     const urlParams = new URLSearchParams(window.location.search);
     const currentSort = urlParams.get("sort") || "new";
 
     const sortRadio = document.getElementById(currentSort);
     if (sortRadio) sortRadio.checked = true;
 
-    const postsToRender = query(currentSort);
-    renderPosts(postsToRender);
+    const postsToRender = await queryFromBackend(currentSort)
+
+    renderPosts(postsToRender)
 
     const user = users.find(user => user._id === userId);
-    document.getElementById("input-post-profile-picture").src =
-        user.profilePicURL;
+    document.getElementById("input-post-profile-picture").src = user.profilePicURL;
 }

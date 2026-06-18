@@ -33,3 +33,7 @@ export function generateId(length = 16) {
 
     return result
 }
+
+export function SQLTimestampToTimestamp(sqlTimestamp) {
+    return new Date(sqlTimestamp).getTime();
+}
