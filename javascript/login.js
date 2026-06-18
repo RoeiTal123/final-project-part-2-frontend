@@ -1,14 +1,33 @@
-import { showToast } from "./toast";
-import { loginUserWithBackend } from "./user.js"; // Import the login client function
+import { showToast } from "./toast.js"; // Note: Ensured .js extension for native modules
+import { loginUserWithBackend, addUserToBackend } from "./user.js"; 
 
-document.addEventListener("DOMContentLoaded", Main)
+document.addEventListener("DOMContentLoaded", Main);
 
-function Main () {
+function Main() {
+    // 1. Expose functions to the window object so HTML inline handlers (onclick/oninput) can see them
+    window.showSignup = showSignup;
+    window.showLogin = showLogin;
+    window.removeNumbers = removeNumbers;
+    window.removeLetters = removeLetters;
+    window.formatPhoneNumber = formatPhoneNumber;
+    window.countLetters = countLetters;
+    window.submitLoginForm = submitLoginForm;
+    window.submitSignupForm = submitSignupForm;
+
+    // 2. Fallback event listener for standard form submit actions
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
         loginForm.addEventListener("submit", (e) => {
             e.preventDefault();
             submitLoginForm();
+        });
+    }
+    
+    const signupForm = document.getElementById("signupForm");
+    if (signupForm) {
+        signupForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            submitSignupForm();
         });
     }
 }
@@ -95,9 +114,7 @@ async function submitLoginForm() {
     }
 }
 
-
 async function submitSignupForm() {
-    // 1. Gather all document input fields
     const fnameEl = document.getElementById("fname");
     const lnameEl = document.getElementById("lname");
     const phoneEl = document.getElementById("phone");
@@ -107,14 +124,12 @@ async function submitSignupForm() {
     const dobEl = document.getElementById("dob");
     const catLikesEl = document.getElementById("cat-likes");
 
-    // 2. Client-side validation check
     if (!fnameEl.value || !lnameEl.value || !phoneEl.value || !emailEl.value || 
         !usernameEl.value || !passwordEl.value || !dobEl.value || !catLikesEl.value) {
         showToast("Please fill in all signing up fields", "main");
         return;
     }
 
-    // 3. Construct payload object payload matching backend expectations
     const userData = {
         fname: fnameEl.value.trim(),
         lname: lnameEl.value.trim(),
@@ -126,18 +141,14 @@ async function submitSignupForm() {
         catLikes: catLikesEl.value.trim()
     };
 
-    // 4. Send request through your API layer (user.js) which hits httpService
     const result = await addUserToBackend(userData);
 
     if (result && result.userId) {
         showToast("Account created successfully! Please log in.", "main");
         
-        // 5. Clean form inputs
         document.getElementById("signupForm").reset();
         document.getElementById("word-count-display").textContent = "0/1000";
 
-        // 6. Automatically toggle UI views back to login window pane
-        // Simulated click action to reuse your custom interface toggle routing layout
         showLogin(new Event('click'));
     } else {
         showToast("Failed to register account. Try again.", "main");
