@@ -12,7 +12,7 @@ document.querySelector(".create-post-btn")
         const currentSort =
             new URLSearchParams(window.location.search).get("sort") || "new";
 
-        renderPosts(query(currentSort));
+        renderPosts(queryFromBackend(currentSort));
     });
 
 document.addEventListener("click", (e) => {
@@ -24,17 +24,17 @@ document.addEventListener("click", (e) => {
         const currentSort =
             new URLSearchParams(window.location.search).get("sort") || "new";
 
-        renderPosts(query(currentSort));
+        renderPosts(queryFromBackend(currentSort));
     }
 });
 
 radios.forEach(radio => {
-    radio.addEventListener("change", (e) => {
+    radio.addEventListener("change", async (e) => {
         const value = e.target.value;
 
         handleSortChange(value);
 
-        const postsToRender = query(value);
+        const postsToRender = await queryFromBackend(value);
         renderPosts(postsToRender);
     });
 });
@@ -196,10 +196,6 @@ export function renderPosts(list) { // function that renders updates posts
             const liked = isLiked(post.id, userId) // checks is each post is liked by the loggedin user
 
             const poster = users.find(user => user._id === post.user_id)
-            console.log(users)
-            console.log(post)
-            console.log(post.user_id)
-            console.log(poster)
             // console.log(poster)
             return `
             <div class="post-box">
@@ -398,6 +394,5 @@ async function updateMainContent() {
     renderPosts(postsToRender)
 
     const user = users.find(user => user._id === userId);
-    console.log(typeof (userId))
     document.getElementById("input-post-profile-picture").src = user.profilePicURL;
 }
