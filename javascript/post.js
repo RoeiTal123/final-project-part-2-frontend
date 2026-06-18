@@ -179,7 +179,22 @@ export function query(value) {
 
 export async function queryFromBackend(value = "") {
     try {
-        const res = await axios.get("http://localhost:3000/posts", {
+        const res = await axios.get("http://localhost:3000/api/posts", {
+            params: { sort: value }
+        });
+
+        console.log("🔥 BACKEND POSTS:", res.data);
+        return res.data;
+
+    } catch (err) {
+        console.log("❌ Backend query failed:", err);
+        return null;
+    }
+}
+
+export async function postByIdFromBackend(value = "") {
+    try {
+        const res = await axios.get("http://localhost:3000/api/posts/:id", {
             params: { sort: value }
         });
 
