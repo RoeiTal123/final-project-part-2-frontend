@@ -1,30 +1,32 @@
 import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp } from '../javascript/helper.js'
 import { showToast, hideToast } from './toast.js'
-import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend } from './post.js'
+import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, deletePostFromBackend } from './post.js'
 
 document.addEventListener("DOMContentLoaded", Main)
 const radios = document.querySelectorAll('input[name="sort"]');
 
 document.querySelector(".create-post-btn")
-    .addEventListener("click", () => {
+    .addEventListener("click", async () => {
         createPostAndPutInBackend();
 
-        const currentSort =
-            new URLSearchParams(window.location.search).get("sort") || "new";
+        const currentSort =new URLSearchParams(window.location.search).get("sort") || "new";
 
-        renderPosts(queryFromBackend(currentSort));
+        const posts = await queryFromBackend(currentSort)
+        renderPosts(posts);
     });
 
-document.addEventListener("click", (e) => {
+document.addEventListener("click", async (e) => {
     const removeBtn = e.target.closest(".remove-post-btn");
 
     if (removeBtn) {
-        deletePost(removeBtn.dataset.id);
+        const id = Number(removeBtn.dataset.id)
+        deletePostFromBackend(id);
 
         const currentSort =
             new URLSearchParams(window.location.search).get("sort") || "new";
 
-        renderPosts(queryFromBackend(currentSort));
+        const posts = await queryFromBackend(currentSort)
+        renderPosts(posts);
     }
 });
 
@@ -196,7 +198,6 @@ export function renderPosts(list) { // function that renders updates posts
             const liked = isLiked(post.id, userId) // checks is each post is liked by the loggedin user
 
             const poster = users.find(user => user._id === post.user_id)
-            // console.log(poster)
             return `
             <div class="post-box">
                 <div class="post-header">
@@ -210,7 +211,7 @@ export function renderPosts(list) { // function that renders updates posts
                            </div>
                            <div class="right">
                            <div class="post-date">${getTimeAgo(SQLTimestampToTimestamp(post.created_at))}</div>
-                           <button class="remove-post-btn" data-id="${post.id}">X</button>
+                           <button class="remove-post-btn" data-id=${post.id}>X</button>
                            </div>
                            </div>
                        </div>
@@ -389,9 +390,9 @@ async function updateMainContent() {
     const sortRadio = document.getElementById(currentSort);
     if (sortRadio) sortRadio.checked = true;
 
-    const postsToRender = await queryFromBackend(currentSort)
+    const posts = await queryFromBackend(currentSort)
 
-    renderPosts(postsToRender)
+    renderPosts(posts)
 
     const user = users.find(user => user._id === userId);
     document.getElementById("input-post-profile-picture").src = user.profilePicURL;

@@ -25,22 +25,29 @@ export const httpService = { // Our methods of communication (Titles)
     }
 }
 
-async function ajax(endpoint, method = 'GET', data = null) { //The functions themselfs
-    try {
-        const res = await axios({
-            url: `${BASE_URL}${endpoint}`,
-            method,
-            data,
-            params: (method === 'GET') ? data : null
-        })
-        return res.data
-    } catch (err) {
-        console.log(`Had Issues ${method}ing to the backend, endpoint: ${endpoint}, with data: `, data)
-        console.dir(err)
-        if (err.response && err.response.status === 401) {
-            sessionStorage.clear()
-            // window.location.assign('/')
-        }
-        throw err
+async function ajax(endpoint, method = 'GET', data = null) {
+    let url = `${BASE_URL}${endpoint}`;
+
+    if (method === 'GET' && data) {
+        const query = new URLSearchParams(data).toString();
+        url += `?${query}`;
     }
+
+    const hasBody =
+    ["POST", "PUT", "PATCH"].includes(method) &&
+    data !== null &&
+    data !== undefined;
+
+    const response = await fetch(url, {
+        method,
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: hasBody ? JSON.stringify(data) : undefined
+    });
+
+    if (!response.ok) throw new Error(response.status);
+
+    return response.json();
 }

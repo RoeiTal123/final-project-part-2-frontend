@@ -1,7 +1,8 @@
 import { showToast } from './toast.js'
 import { generateId } from './helper.js'
 import { saveArrayToStorage, getArrayFromStorage } from '../javascript/helper.js'
-import axios from 'axios'
+import { httpService } from "./communication.js";
+import { renderPosts } from './main.js';
 
 let defaultPosts = [
     {
@@ -188,12 +189,16 @@ export function query(value) {
 
 export async function queryFromBackend(value = "") {
     try {
-        const res = await axios.get("http://localhost:3000/api/posts", {
-            params: { sort: value }
-        });
+        const res = await httpService.get(
+            "posts",
+            { sort: value }
+        );
 
-        console.log("🔥 BACKEND POSTS:", res.data);
-        return res.data;
+        console.log("🔥 BACKEND POSTS:", res);
+
+        posts = res;
+        renderPosts(posts)
+        return res;
 
     } catch (err) {
         console.log("❌ Backend query failed:", err);
@@ -201,14 +206,13 @@ export async function queryFromBackend(value = "") {
     }
 }
 
-export async function postByIdFromBackend(value = "") {
+export async function postByIdFromBackend(postId) {
     try {
-        const res = await axios.get(`http://localhost:3000/api/posts/${value}`, {
-            params: { postid: value }
-        });
+        const post = await httpService.get(`posts/${postId}`, "GET");
 
-        console.log("🔥 BACKEND POSTS:", res.data);
-        return res.data;
+        console.log("🔥 BACKEND POST:", post);
+
+        return post;
 
     } catch (err) {
         console.log("❌ Backend query failed:", err);
@@ -234,8 +238,8 @@ export async function createPostAndPutInBackend() {
     }
 
     const newPost = {
-        _id: generateId(),
-        _userid: userId,
+        id: generateId(),
+        user_id: Number(userId),
         title,
         description: desc,
         mediaType: "none",
@@ -245,14 +249,60 @@ export async function createPostAndPutInBackend() {
     };
 
     try {
-        const res = await axios.put("http://localhost:3000/api/posts",
+        const createdPost = await httpService.put(
+            "posts",
             newPost
-        )
+        );
 
-        console.log("🔥 CREATED POST:", res.data)
+        console.log("🔥 CREATED POST:", createdPost);
+        posts.push(newPost)
+        renderPosts(posts)
+        showToast(`created post [${newPost.id}]`, "main");
 
-        titleEl.value = ""
-        descEl.value = ""
+        titleEl.value = "";
+        descEl.value = "";
+
+        return createdPost;
+    }
+    catch (err) {
+        console.log("❌ Backend create failed:", err);
+        return null;
+    }
+}
+
+export async function updatePostInBackend() {
+
+}
+
+export async function deletePostFromBackend(postId) {
+    const userid=Number(userId)
+    if (!postId) {
+        showToast("invalid post", "main");
+        return;
+    }
+
+    const post = posts.find(p => {
+        return p.id === postId
+    });
+
+    if (!post) {
+        showToast("post not found", "main");
+        return;
+    }
+
+    if (post.user_id !== userid) {
+        showToast("not allowed", "main");
+        return;
+    }
+
+
+    try {
+        const res = await httpService.delete(`posts/${postId}`)
+
+        posts = posts.filter(p => p.id !== postId);
+        renderPosts(posts)
+        console.log("🔥 DELETED POST:", res.data)
+        showToast(`deleted post [${postId}]`, "main");
 
         return res.data
     }
@@ -260,17 +310,6 @@ export async function createPostAndPutInBackend() {
         console.log("❌ Backend create failed:", err)
         return null
     }
-
-    posts.push(newPost);
-
-    // sync ONCE
-    saveArrayToStorage("posts", posts);
-
-    // reset cache because data changed
-    cache.result = null;
-    cache.sort = "none";
-
-    showToast(`created post [${newPost._id}]`, "main");
 }
 
 // =====================
@@ -294,8 +333,8 @@ export function createPost() {
     }
 
     const newPost = {
-        _id: generateId(),
-        _userid: userId,
+        id: generateId(),
+        user_id: userId,
         title,
         description: desc,
         mediaType: "none",
@@ -316,7 +355,7 @@ export function createPost() {
     titleEl.value = "";
     descEl.value = "";
 
-    showToast(`created post [${newPost._id}]`, "main");
+    showToast(`created post [${newPost.id}]`, "main");
 }
 
 // =====================
