@@ -121,7 +121,16 @@ let usersKey = "users"
 let postsKey = "posts"
 
 // ✅ load ONCE only (no repeated localStorage reads)
-let posts = getArrayFromStorage("posts", defaultPosts);
+// let posts = getArrayFromStorage("posts", defaultPosts);
+
+let posts = []
+
+// async function initPosts() {
+//     posts = await queryFromBackend()
+//     renderPosts()
+// }
+
+// initPosts()
 
 // cached query result (optional optimization)
 let cache = {
@@ -205,6 +214,63 @@ export async function postByIdFromBackend(value = "") {
         console.log("❌ Backend query failed:", err);
         return null;
     }
+}
+
+export async function createPostAndPutInBackend() {
+    const titleEl = document.getElementById("post-title-input")
+    const descEl = document.getElementById("post-descrption-input")
+
+    const title = titleEl.value.trim()
+    const desc = descEl.value.trim()
+
+    if (!title) {
+        showToast("missing title", "main");
+        return;
+    }
+
+    if (!desc) {
+        showToast("missing description", "main");
+        return;
+    }
+
+    const newPost = {
+        _id: generateId(),
+        _userid: userId,
+        title,
+        description: desc,
+        mediaType: "none",
+        mediaUrl: "",
+        likedByUsers: [],
+        createdAt: Date.now()
+    };
+
+    try {
+        const res = await axios.put("http://localhost:3000/api/posts",
+            newPost
+        )
+
+        console.log("🔥 CREATED POST:", res.data)
+
+        titleEl.value = ""
+        descEl.value = ""
+
+        return res.data
+    }
+    catch (err) {
+        console.log("❌ Backend create failed:", err)
+        return null
+    }
+
+    posts.push(newPost);
+
+    // sync ONCE
+    saveArrayToStorage("posts", posts);
+
+    // reset cache because data changed
+    cache.result = null;
+    cache.sort = "none";
+
+    showToast(`created post [${newPost._id}]`, "main");
 }
 
 // =====================
