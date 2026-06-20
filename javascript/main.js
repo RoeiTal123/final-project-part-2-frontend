@@ -17,13 +17,28 @@ document.addEventListener("click", async (e) => {
     if (editId) {
         success = await editPostAndPutInBackend(Number(editId));
 
-        // leave edit mode
-        delete createBtn.dataset.editId;
+        if (success) {
+            delete createBtn.dataset.editId;
+            delete createBtn.dataset.originalTitle;
+            delete createBtn.dataset.originalDescription;
+        }
     } else {
         success = await createPostAndPutInBackend();
     }
 
-    if (!success) return;
+    if (!success) {
+        delete createBtn.dataset.editId;
+        delete createBtn.dataset.originalTitle;
+        delete createBtn.dataset.originalDescription;
+
+        // reset UI inputs
+        document.getElementById("post-title-input").value = "";
+        document.getElementById("post-descrption-input").value = "";
+
+        createBtn.textContent = "Create Post";
+
+        return;
+    }
 
     const currentSort =
         new URLSearchParams(window.location.search).get("sort") || "new";
