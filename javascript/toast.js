@@ -5,7 +5,6 @@ let pinned = false;
 export function showToast(message, pageName = "main", duration = 10000) {
   const containerId = `modal-${pageName}`;
   const container = document.getElementById(containerId);
-  console.log("container:", document.getElementById(`modal-${pageName}`));
   if (!container) {
     console.warn(`Toast container not found: #${containerId}`);
     return;

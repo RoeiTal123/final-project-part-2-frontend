@@ -121,17 +121,7 @@ let userId = "4"
 let usersKey = "users"
 let postsKey = "posts"
 
-// ✅ load ONCE only (no repeated localStorage reads)
-// let posts = getArrayFromStorage("posts", defaultPosts);
-
 let posts = []
-
-// async function initPosts() {
-//     posts = await queryFromBackend()
-//     renderPosts()
-// }
-
-// initPosts()
 
 // cached query result (optional optimization)
 let cache = {
@@ -270,12 +260,78 @@ export async function createPostAndPutInBackend() {
     }
 }
 
-export async function updatePostInBackend() {
+export async function editPostAndPutInBackend(postId) {
+    const titleEl = document.getElementById("post-title-input");
+    const descEl = document.getElementById("post-descrption-input");
 
+    const title = titleEl.value.trim();
+    const desc = descEl.value.trim();
+
+    if (!title) {
+        showToast("missing title", "main");
+        return null;
+    }
+
+    if (!desc) {
+        showToast("missing description", "main");
+        return null;
+    }
+
+    const originalIndex = posts.findIndex(p => p.id === postId);
+    if (originalIndex === -1) return null;
+
+    const originalPost = posts[originalIndex];
+
+    // nothing changed check
+    if (
+        originalPost.title === title &&
+        originalPost.description === desc
+    ) {
+        showToast("nothing changed, not saving", "main");
+        return null;
+    }
+
+    // copy + overwrite
+    const updatedPost = {
+        ...originalPost,
+        title,
+        description: desc
+    };
+
+    // optimistic UI update
+    posts[originalIndex] = updatedPost;
+    renderPosts(posts);
+
+    showToast(`updated post [${postId}]`, "main");
+
+    // reset UI
+    titleEl.value = "";
+    descEl.value = "";
+
+    try {
+        await httpService.put(`posts/${postId}`, updatedPost);
+
+        showToast(`updated post [${postId}]`, "main");
+
+        titleEl.value = "";
+        descEl.value = "";
+
+        return updatedPost;
+    }
+    catch (err) {
+        console.log("❌ Backend update failed:", err);
+
+        // rollback
+        posts[originalIndex] = originalPost;
+        renderPosts(posts);
+
+        showToast("update failed", "main");
+        return null;
+    }
 }
 
 export async function deletePostFromBackend(postId) {
-    const userid=Number(userId)
+    const userid = Number(userId)
     if (!postId) {
         showToast("invalid post", "main");
         return;
@@ -310,6 +366,11 @@ export async function deletePostFromBackend(postId) {
         console.log("❌ Backend create failed:", err)
         return null
     }
+}
+
+export async function thePosts() {
+    if (!posts) return null
+    return posts;
 }
 
 // =====================

@@ -1,19 +1,55 @@
 import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp } from '../javascript/helper.js'
 import { showToast, hideToast } from './toast.js'
-import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, deletePostFromBackend } from './post.js'
+import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from './post.js'
 
 document.addEventListener("DOMContentLoaded", Main)
 const radios = document.querySelectorAll('input[name="sort"]');
 
-document.querySelector(".create-post-btn")
-    .addEventListener("click", async () => {
-        createPostAndPutInBackend();
+document.addEventListener("click", async (e) => {
+    const createBtn = e.target.closest(".create-post-btn");
 
-        const currentSort =new URLSearchParams(window.location.search).get("sort") || "new";
+    if (!createBtn) return;
 
-        const posts = await queryFromBackend(currentSort)
-        renderPosts(posts);
-    });
+    const editId = createBtn.dataset.editId;
+
+    let success;
+
+    if (editId) {
+        success = await editPostAndPutInBackend(Number(editId));
+
+        // leave edit mode
+        delete createBtn.dataset.editId;
+    } else {
+        success = await createPostAndPutInBackend();
+    }
+
+    if (!success) return;
+
+    const currentSort =
+        new URLSearchParams(window.location.search).get("sort") || "new";
+
+    const posts = await queryFromBackend(currentSort);
+    renderPosts(posts);
+});
+
+document.addEventListener("click", async (e) => {
+    const editBtn = e.target.closest(".edit-post-btn");
+
+    if (editBtn) {
+        const postId = Number(editBtn.dataset.id);
+        const posts = await thePosts();
+        const post = posts.find(p => p.id === postId);
+
+        document.getElementById("post-title-input").value = post.title;
+        document.getElementById("post-descrption-input").value = post.description;
+
+        const createBtn = document.querySelector(".create-post-btn");
+
+        createBtn.dataset.editId = postId;
+        createBtn.dataset.originalTitle = post.title;
+        createBtn.dataset.originalDescription = post.description;
+    }
+});
 
 document.addEventListener("click", async (e) => {
     const removeBtn = e.target.closest(".remove-post-btn");
@@ -198,6 +234,8 @@ export function renderPosts(list) { // function that renders updates posts
             const liked = isLiked(post.id, userId) // checks is each post is liked by the loggedin user
 
             const poster = users.find(user => user._id === post.user_id)
+
+            const isOwner = Number(post.user_id) === Number(userId);
             return `
             <div class="post-box">
                 <div class="post-header">
@@ -211,7 +249,10 @@ export function renderPosts(list) { // function that renders updates posts
                            </div>
                            <div class="right">
                            <div class="post-date">${getTimeAgo(SQLTimestampToTimestamp(post.created_at))}</div>
-                           <button class="remove-post-btn" data-id=${post.id}>X</button>
+                           ${isOwner ? `
+                                    <button class="edit-post-btn" data-id="${post.id}">:</button>
+                                     <button class="remove-post-btn" data-id="${post.id}">X</button>
+                            ` : ""}
                            </div>
                            </div>
                        </div>
@@ -245,7 +286,7 @@ function renderCommunities() {
     const container = document.querySelector(".communities-box")
 
     const userCommunities = communities.filter(c => {
-        return(
+        return (
             c.ownerId === userId ||
             c.moderators.includes(userId) ||
             c.members.includes(userId)
