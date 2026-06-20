@@ -21,6 +21,8 @@ document.addEventListener("click", async (e) => {
             delete createBtn.dataset.editId;
             delete createBtn.dataset.originalTitle;
             delete createBtn.dataset.originalDescription;
+
+            createBtn.textContent = "Add Post";
         }
     } else {
         success = await createPostAndPutInBackend();
@@ -63,6 +65,8 @@ document.addEventListener("click", async (e) => {
         createBtn.dataset.editId = postId;
         createBtn.dataset.originalTitle = post.title;
         createBtn.dataset.originalDescription = post.description;
+
+        createBtn.textContent = "Edit Post";
     }
 });
 
