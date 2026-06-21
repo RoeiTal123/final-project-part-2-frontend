@@ -37,3 +37,23 @@ export function generateId(length = 16) {
 export function SQLTimestampToTimestamp(sqlTimestamp) {
     return new Date(sqlTimestamp).getTime();
 }
+
+async function uploadToCloudinary(file) {
+  const formData = new FormData();
+
+  formData.append("file", file);
+  formData.append("upload_preset", "YOUR_UPLOAD_PRESET"); // from Cloudinary
+  formData.append("cloud_name", "YOUR_CLOUD_NAME");
+
+  const res = await fetch(
+    "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/upload",
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await res.json();
+
+  return data.secure_url; // THIS is your final image URL
+}

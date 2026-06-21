@@ -96,6 +96,17 @@ radios.forEach(radio => {
     });
 });
 
+let selectedMediaFile = null;
+
+document
+  .getElementById("post-media-input")
+  .addEventListener("change", (e) => {
+    selectedMediaFile = e.target.files[0];
+
+    // optional preview only
+    const previewUrl = URL.createObjectURL(selectedMediaFile);
+    document.querySelector("#preview").src = previewUrl;
+});
 
 const users = [{
     _id: 1, username: "moshe", password: "moshedat", fullname: "moshe perets", mail: "moshe@dat.com", createdAt: 1778841205000,
@@ -374,48 +385,6 @@ function getTimeAgo(timestamp) {
 
     return `${days}d ago`
 }
-
-// function alterPosts(value = sortMethod) { // function to sort / filter posts
-//     const storedPosts = [...posts]
-//     let alteredPosts // variable for posts to alter
-//     if (value === sortMethod) return
-
-//     switch (value) { // checks the value of the chosen input radio button
-
-//         case "new":
-//             sortMethod = "new"
-//             alteredPosts = [...storedPosts].sort((a, b) => b.createdAt - a.createdAt) // + = true so it sorts if gap in time is smaller because today < yestarday
-//             break                                                               // the bigger the timestamp, the more time had passed
-
-//         case "old":
-//             sortMethod = "old"
-//             alteredPosts = [...storedPosts].sort((a, b) => a.createdAt - b.createdAt) // - = false, does the opposite of the other sort
-//             break
-
-//         case "day":
-//             sortMethod = "day"
-//             alteredPosts = [...storedPosts].filter(post =>                            // filters based on value, timestamp is in miliseconds so 1=1 milisecond, 1000 = 1 second, 60000 = minute
-//                 post.createdAt >= Date.now() - (1000 * 60 * 60 * 24))           // 3,600,000 = hour, that x 24 = day
-//             break
-
-//         case "week":
-//             sortMethod = "week"
-//             alteredPosts = [...storedPosts].filter(post =>                            // filters the same way but now day x 7 = week
-//                 post.createdAt >= Date.now() - (1000 * 60 * 60 * 24 * 7))
-//             break
-
-//         case "month":
-//             sortMethod = "month"
-//             alteredPosts = [...storedPosts].filter(post =>                            // filters the same way but now day x 30 = month
-//                 post.createdAt >= Date.now() - (1000 * 60 * 60 * 24 * 30))
-//             break
-//     }
-//     handleSortChange(value)
-//     postsForRender = [...alteredPosts]                                        // updates the list we use, not database itself
-//     renderPosts(alteredPosts)
-//     // showToast(`sorted / filtered by ${value}`,"main")
-//     // console.log(`sorted / filtered by ${value}`)
-// }
 
 function isLiked(postId, userId = userId) { // checks if post with id = postId is liked by user with id = Userid
     const post = query().find(p => p._id === postId);
