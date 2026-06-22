@@ -219,18 +219,30 @@ export async function deletePostFromBackend(postId) {
 
 
     try {
-        const res = await httpService.delete(`posts/${postId}`)
+        // 1. FIRST ask backend to delete post (it handles Cloudinary safely)
+        const res = await httpService.delete(`posts/${postId}`);
 
+        const data = res.data;
+
+        // 2. ONLY proceed if backend confirms success
+        if (!data?.success) {
+            showToast("delete failed", "main");
+            return null;
+        }
+
+        // 3. remove locally ONLY after confirmation
         posts = posts.filter(p => p.id !== postId);
-        renderPosts(posts)
-        console.log("🔥 DELETED POST:", res.data)
+        renderPosts(posts);
+
+        console.log("🔥 DELETED POST:", data);
         showToast(`deleted post [${postId}]`, "main");
 
-        return res.data
-    }
-    catch (err) {
-        console.log("❌ Backend create failed:", err)
-        return null
+        return data;
+
+    } catch (err) {
+        console.log("❌ Backend delete failed:", err);
+        showToast("delete failed", "main");
+        return null;
     }
 }
 
