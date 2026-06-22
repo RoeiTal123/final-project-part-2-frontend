@@ -1,14 +1,9 @@
-import Axios from 'axios' // Make request to URL
 
 const BASE_URL =                              // Search this URL
     window.location.hostname === 'localhost'
         ? 'http://localhost:3000/api/'
         : '/api/'
 
-
-var axios = Axios.create({ // Creating a request
-    withCredentials: true
-})
 
 export const httpService = { // Our methods of communication (Titles)
     get(endpoint, data) {
