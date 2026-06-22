@@ -391,12 +391,12 @@ export async function toggleLike(postId, userId) {
 
             post.likedByUsers = post.likedByUsers.filter(id => id !== userId);
 
-            showToast("unliked post","main");
+            showToast("unliked post","main", "success");
         } else {
             await httpService.post(`posts/${postId}/likes`, { userId });
 
             post.likedByUsers.push(userId);
-            showToast("liked post","main");
+            showToast("liked post","main", "success");
         }
         renderPosts(posts)
 

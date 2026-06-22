@@ -230,7 +230,8 @@ export async function renderPosts(list) { // function that renders updates posts
                             : ""
                         }
                 <div class="post-footer">
-                  <div class="like-btn" data-id="${post.id}">
+                 <div class="like-container-wrapper" style="position: relative; display: inline-block;">
+                  <div class="like-btn ${liked ? 'is-liked' : ''}" data-id="${post.id}">
                     <svg viewBox="0 -2 24 24" height="24px" id="meteor-icon-kit__solid-heart" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--black)" stroke-width="${liked ? '0' : '0.24'}">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier">
@@ -238,6 +239,7 @@ export async function renderPosts(list) { // function that renders updates posts
                      d="M21.4281 11.714L13.9092 19.2329C12.8548 20.2873 11.1452 20.2873 10.0908 19.2329L2.57191 11.714C-0.0315858 9.1105 -0.0315856 4.8894 2.57191 2.28591C5.17541 -0.31759 9.3965 -0.31759 12 2.28591C14.6035 -0.31759 18.8246 -0.31759 21.4281 2.28591C24.0316 4.8894 24.0316 9.1105 21.4281 11.714z"/>
                     </g>
                     </svg>
+                    </div>
                   </div>
                   <span>${post.likedByUsers.length}</span>
                 </div>
