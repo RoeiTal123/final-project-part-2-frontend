@@ -1,5 +1,6 @@
 import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp } from '../javascript/helper.js'
 import { showToast, hideToast } from './toast.js'
+import { setSelectedMedia } from "./media-state.js";
 import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from './post.js'
 
 document.addEventListener("DOMContentLoaded", Main)
@@ -96,18 +97,39 @@ radios.forEach(radio => {
     });
 });
 
-let selectedMediaFile = null;
 
-document
-  .getElementById("post-media-input")
-  .addEventListener("change", (e) => {
-    selectedMediaFile = e.target.files[0];
+const input = document.getElementById("post-media-input");
+const mediaBox = document.getElementById("media-box");
 
-    // optional preview only
-    const previewUrl = URL.createObjectURL(selectedMediaFile);
-    document.querySelector("#preview").src = previewUrl;
+input.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setSelectedMedia(file);
+
+    const url = URL.createObjectURL(file);
+
+    mediaBox.innerHTML = "";
+
+    if (file.type.startsWith("image/")) {
+        const img = document.createElement("img");
+        img.src = url;
+        img.classList.add("input-media-image");
+        mediaBox.appendChild(img);
+    }
+
+    else if (file.type.startsWith("video/")) {
+        const video = document.createElement("video");
+        video.src = url;
+        video.controls = true;
+        video.classList.add("input-media-video");
+        mediaBox.appendChild(video);
+    }
+
+    else {
+        mediaBox.innerHTML = "unsupported file type";
+    }
 });
-
 const users = [{
     _id: 1, username: "moshe", password: "moshedat", fullname: "moshe perets", mail: "moshe@dat.com", createdAt: 1778841205000,
     birthday: 1021669200000, profilePicURL: "../design/images/profile pictures/man_1.avif", userType: "feeder", feedingStations: [{ _id: 1, status: "owner" }], posts: ["1", "4", "7", "10"]
@@ -287,13 +309,15 @@ export function renderPosts(list) { // function that renders updates posts
                            </div>
                        </div>
                        <div class="post-description">${post.description}</div>
-                       ${post.media_type !== "none"
-                    ? `<div class="post-media">
-                               ${post.media_type === "image"
-                        ? `<img class="post-image" src="${post.media_url}" />`
-                        : `<video class="post-video" controls src="${post.media_url}"></video>`
-                    }
-                </div>`: ""}
+                       ${post.media_url
+                            ? `<div class="post-media">
+                            ${post.media_type === "video"
+                            ? `<video class="post-video" controls src="${post.media_url}"></video>`
+                            : `<img class="post-image" src="${post.media_url}" />`
+                            }
+                            </div>`
+                            : ""
+                        }
                 <div class="post-footer">
                   <div class="like-btn" data-id="${post.id}">
                     <svg viewBox="0 -2 24 24" height="24px" id="meteor-icon-kit__solid-heart" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--black)" stroke-width="${liked ? '0' : '0.24'}">

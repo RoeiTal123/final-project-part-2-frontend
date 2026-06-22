@@ -285,5 +285,16 @@
     justify-content: center;
     width: 100%;
     flex: 1;
-    max-height: 280px;
+    max-height: 160px;
+}
+
+
+.input-media-image {
+    max-height: 100%;
+    background-color: black;
+}
+
+.input-media-video {
+    max-height: 100%;
+    background-color: black;
 }
