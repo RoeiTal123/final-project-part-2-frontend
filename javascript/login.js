@@ -1,7 +1,6 @@
 import { showToast } from "./toast.js";
 import { addUser, checkForUser } from "./user.js"; 
 
-// jeffjeff
 const showSignup = (event) => {
     if (event) event.preventDefault();
     document.getElementById('loginWindow').classList.add('hidden');
