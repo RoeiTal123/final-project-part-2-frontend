@@ -86,6 +86,16 @@ document.addEventListener("click", async (e) => {
     }
 });
 
+document.addEventListener("click", (e) => {
+    const likeBtn = e.target.closest(".like-btn");
+    if (!likeBtn) return;
+
+    const postId = likeBtn.dataset.id;
+    const userId = getCurrentUserId(); // or however you store it
+
+    toggleLike(postId, userId);
+});
+
 radios.forEach(radio => {
     radio.addEventListener("change", async (e) => {
         const value = e.target.value;
@@ -143,7 +153,7 @@ const users = [{
     birthday: 1021669200000, profilePicURL: "../design/images/profile pictures/woman_2.jpg", userType: "moderator", feedingStations: [], posts: ["3", "6", "9"]
 },
 {
-    _id: 4, username: "breado", password: "bread123", fullname: "breado bread", mail: "bread@b.com", createdAt: 1778841205000,
+    _id: 4, username: "roberto", password: "roberto234", fullname: "roberto gonzales", mail: "roberto_gonzales@b.com", createdAt: 1778841205000,
     birthday: 1021669200000, profilePicURL: "../design/images/profile pictures/man_2.jpg", userType: "feeder", feedingStations: [{ _id: 1, status: "owner" }], posts: []
 }]
 

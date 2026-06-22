@@ -91,7 +91,6 @@ export async function createPostAndPutInBackend() {
     }
 
     const newPost = {
-        id: generateId(),
         user_id: Number(userId),
         title,
         description: desc,
@@ -112,7 +111,7 @@ export async function createPostAndPutInBackend() {
         console.log("🔥 CREATED POST:", createdPost);
         posts.push(newPost)
         renderPosts(posts)
-        showToast(`created post [${newPost.id}]`, "main");
+        showToast(`created post`, "main");
 
         titleEl.value = "";
         descEl.value = "";
@@ -222,22 +221,20 @@ export async function deletePostFromBackend(postId) {
         // 1. FIRST ask backend to delete post (it handles Cloudinary safely)
         const res = await httpService.delete(`posts/${postId}`);
 
-        const data = res.data;
-
         // 2. ONLY proceed if backend confirms success
-        if (!data?.success) {
-            showToast("delete failed", "main");
-            return null;
-        }
+        if (!res.success) {
+        showToast("delete failed", "main");
+        return null;
+    }
 
         // 3. remove locally ONLY after confirmation
         posts = posts.filter(p => p.id !== postId);
         renderPosts(posts);
 
-        console.log("🔥 DELETED POST:", data);
+        console.log("🔥 DELETED POST:", res);
         showToast(`deleted post [${postId}]`, "main");
 
-        return data;
+        return res;
 
     } catch (err) {
         console.log("❌ Backend delete failed:", err);
@@ -376,17 +373,25 @@ export function deletePost(postId = "") {
     showToast(`deleted post [${postId}]`, "main");
 }
 
-export function toggleLike(postId, userId) {
+export async function toggleLike(postId, userId) {
     const post = posts.find(p => p._id === postId);
     if (!post) return;
 
     const liked = post.likedByUsers.includes(userId);
 
-    if (liked) {
-        post.likedByUsers = post.likedByUsers.filter(id => id !== userId);
-    } else {
-        post.likedByUsers.push(userId);
-    }
+    try {
+        if (liked) {
+            await httpService.delete(`posts/${postId}/likes`, { userId });
 
-    saveArrayToStorage("posts", posts);
+            post.likedByUsers = post.likedByUsers.filter(id => id !== userId);
+        } else {
+            await httpService.post(`posts/${postId}/likes`, { userId });
+
+            post.likedByUsers.push(userId);
+        }
+
+        saveArrayToStorage("posts", posts);
+    } catch (err) {
+        console.log("❌ toggleLike failed:", err);
+    }
 }
