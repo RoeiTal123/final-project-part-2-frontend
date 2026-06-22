@@ -59,10 +59,15 @@ async function submitLoginForm() {
         usernameInput.value = "";
         passwordInput.value = "";
 
-        console.log("Logged in user details:", loggedInUser);
+        localStorage.setItem("loggedUser", JSON.stringify(loggedInUser));
+
+        console.log("Session started for:", loggedInUser.username);
         
+        // Redirect to your main application dashboard
+        window.location.href = "../htmls/index.html"; 
     }
 }
+
 
 
 async function submitSignupForm() {
@@ -134,3 +139,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+export function logoutUser() {
+    localStorage.removeItem("loggedUser");
+    
+    window.location.href = "./login.html";
+}
