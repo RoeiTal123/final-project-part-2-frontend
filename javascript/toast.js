@@ -2,7 +2,7 @@ let toastEl = null;
 let hideTimeout = null;
 let pinned = false;
 
-export function showToast(message, pageName = "main", duration = 10000) {
+export function showToast(message, pageName = "main", type = 'warning', duration = 10000) {
   const containerId = `modal-${pageName}`;
   const container = document.getElementById(containerId);
   if (!container) {
@@ -12,7 +12,8 @@ export function showToast(message, pageName = "main", duration = 10000) {
 
   // create toast element each time (safe + simple)
   const toast = document.createElement("div");
-  toast.className = "toast";
+  // Dynamically inject the notification type class alongside the base 'toast' class
+  toast.className = `toast ${type}`;
 
   toast.innerHTML = `
     <div class="toast-content">

@@ -36,9 +36,9 @@
   flex-shrink: 0; 
 }
 
+/* Base icon generation rule (specific characters managed by theme modifiers) */
 .toast-icon::before {
-  content: "\26A0";
-  color: #ffa500; 
+  display: inline-block;
 }
 
 /* Close button right side alignment container */
@@ -70,6 +70,7 @@
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
 
+/* Base Toast Styles (Neutral properties shared across all types) */
 .toast {
   background: rgba(34, 34, 34, .8);
   color: white;
@@ -91,12 +92,8 @@
 
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
-
-  border: 5px double rgba(255, 183, 0, .8);
-  box-shadow: 
-    0 4px 6px -1px rgba(255, 165, 0, 0.2),
-    0 10px 15px -3px rgba(255, 165, 0, 0.25),
-    0 20px 25px -5px rgba(255, 165, 0, 0.3);
+  
+  border: 5px double transparent; /* Overridden by sub-themes */
 }
 
 .toast.show {
@@ -109,4 +106,47 @@
   transform: translateY(10px) scale(0.95);
   transition: transform 0.25s cubic-bezier(0.36, 0, 0.66, -0.56), 
               opacity 0.25s ease;
+}
+
+/* ==========================================================================
+   NOTIFICATION THEME MODIFIERS
+   ========================================================================== */
+
+/* --- 1. Warning Theme (Default) --- */
+.toast.warning {
+  border-color: rgba(255, 183, 0, .8);
+  box-shadow: 
+    0 4px 6px -1px rgba(255, 165, 0, 0.2),
+    0 10px 15px -3px rgba(255, 165, 0, 0.25),
+    0 20px 25px -5px rgba(255, 165, 0, 0.3);
+}
+.toast.warning .toast-icon::before {
+  content: "\26A0"; /* ⚠ Warning icon */
+  color: #ffa500;
+}
+
+/* --- 2. Success Theme (Green) --- */
+.toast.success {
+  border-color: rgba(40, 167, 69, .8);
+  box-shadow: 
+    0 4px 6px -1px rgba(40, 167, 69, 0.2),
+    0 10px 15px -3px rgba(40, 167, 69, 0.25),
+    0 20px 25px -5px rgba(40, 167, 69, 0.3);
+}
+.toast.success .toast-icon::before {
+  content: "\2714"; /* ✔ Checkmark icon */
+  color: #2ecc71;
+}
+
+/* --- 3. Error Theme (Red) --- */
+.toast.error {
+  border-color: rgba(220, 53, 69, .8);
+  box-shadow: 
+    0 4px 6px -1px rgba(220, 53, 69, 0.2),
+    0 10px 15px -3px rgba(220, 53, 69, 0.25),
+    0 20px 25px -5px rgba(220, 53, 69, 0.3);
+}
+.toast.error .toast-icon::before {
+  content: "\26D4"; /* ⛔ No Entry / Stop sign icon */
+  color: #e74c3c;
 }

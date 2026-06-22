@@ -15,7 +15,7 @@
        How far (px) from a post's edge the glow starts ramping up.
        JS reads this same variable at runtime so the number only
        needs to live in one place. */
-    --glow-falloff-distance: 100px;
+    --glow-falloff-distance: 250px;
 
     /* --- Size scaling ---
        Blur/spread at intensity 0 and intensity 1. The box-shadow calc()
