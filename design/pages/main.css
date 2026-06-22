@@ -2,11 +2,40 @@
 
 /* --- HOVER GLOW INTERFACE CONTROLS --- */
 :root {
-    --glow-size: 350px;                   /* Size of the tracking cursor light pool */
-    --glow-color: rgba(255, 183, 3, .8); /* Muted core tint color for external ambient aura */
-    --glow-border-tint: rgba(255, 183, 3, 0.2); /* Inner bezel stroke accent color on hover */
-    --glow-speed: 0s;                   /* Fade-in and fade-out animation latency */
-    
+    --glow-hue: 200;                        /* Hue (degrees) shared by glow + border tint */
+    --glow-sat: 100%;                      /* Saturation shared by glow + border tint */
+    --glow-light: 51%;                     /* Lightness shared by glow + border tint */
+
+    --glow-color: hsla(var(--glow-hue), var(--glow-sat), var(--glow-light), .8);        /* Core glow color */
+    --glow-border-tint: hsla(var(--glow-hue), var(--glow-sat), var(--glow-light), 0);  /* Card border tint on hover */
+
+    --glow-speed: 0s;                      /* Fade-in/out + resize animation latency */
+
+    /* --- Proximity falloff ---
+       How far (px) from a post's edge the glow starts ramping up.
+       JS reads this same variable at runtime so the number only
+       needs to live in one place. */
+    --glow-falloff-distance: 100px;
+
+    /* --- Size scaling ---
+       Blur/spread at intensity 0 and intensity 1. The box-shadow calc()
+       below interpolates between these using --glow-intensity, so
+       resizing the glow is just editing these four numbers instead of
+       hunting through a calc() expression. */
+    --glow-blur-min: 60px;
+    --glow-blur-max: 140px;
+    --glow-spread-min: 10px;
+    --glow-spread-max: 50px;
+
+    /* Derived deltas, used by the calc() below — keeps the math readable */
+    --glow-blur-delta: calc(var(--glow-blur-max) - var(--glow-blur-min));
+    --glow-spread-delta: calc(var(--glow-spread-max) - var(--glow-spread-min));
+
+    /* Opacity floor/ceiling. Min > 0 gives a faint always-on presence;
+       leave at 0 for the glow to fully disappear far from any post. */
+    --glow-opacity-min: 0;
+    --glow-opacity-max: 1;
+
     /* Global pixel fallbacks for initial coordinate positioning */
     --mouse-x: 0px;
     --mouse-y: 0px;
@@ -17,10 +46,6 @@
 }
 
 /* --- GLOBAL CURSOR GLOW LAYER --- */
-/* Single fixed overlay that tracks the mouse across the viewport.
-   Sits behind the post boxes (z-index 0, below their z-index: 1) so the
-   glow reads as light spilling out from underneath the cards rather than
-   sitting on top of them. Intensity scales with proximity to a post. */
 .cursor-glow {
     position: fixed;
     top: 0;
@@ -40,8 +65,11 @@
     top: var(--mouse-y);
     left: var(--mouse-x);
     border-radius: 50%;
-    box-shadow: 0 0 calc(60px + 80px * var(--glow-intensity)) calc(10px + 40px * var(--glow-intensity)) var(--glow-color);
-    opacity: var(--glow-intensity);
+    box-shadow: 0 0
+        calc(var(--glow-blur-min) + var(--glow-blur-delta) * var(--glow-intensity))
+        calc(var(--glow-spread-min) + var(--glow-spread-delta) * var(--glow-intensity))
+        var(--glow-color);
+    opacity: calc(var(--glow-opacity-min) + (var(--glow-opacity-max) - var(--glow-opacity-min)) * var(--glow-intensity));
     transition: opacity var(--glow-speed) ease, box-shadow var(--glow-speed) ease;
 }
 
