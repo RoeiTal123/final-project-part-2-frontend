@@ -16,11 +16,13 @@ export function showToast(message, pageName = "main", duration = 10000) {
 
   toast.innerHTML = `
     <div class="toast-content">
+      <span class="toast-icon"></span>
       <span class="toast-text"></span>
-      <button class="toast-close">✕</button>
     </div>
+    <button class="toast-close">✕</button>
   `;
 
+  // Safely target the specific inner text span element
   toast.querySelector(".toast-text").textContent = message;
 
   // close button
