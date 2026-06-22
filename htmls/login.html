@@ -4,8 +4,9 @@
 <head>
     <title>Cat Sanctuary</title>
     <link rel="stylesheet" href="../design/pages/login.css">
+    <!-- Clean, vanilla script tag with defer -->
+    <script src="../javascript/login.js" type="module" defer></script>
 </head>
-<script src="../javascript/login.js" type="module"></script>
 
 <body>
     <div class="body">
@@ -13,10 +14,10 @@
             <form id="loginForm">
                 <section>
                     <h1>Login</h1>
-                    <input class="input" type="text" id="login-username" name="username" pattern="[a-zA-Z0-9]+" placeholder="username" value="catlover123" required><br><br>
-                    <input class="input" type="password" id="login-password" minlength="8" name="password" placeholder="password" value="password123" required><br><br>
+                    <input class="input" type="text" id="login-username" name="username" pattern="[a-zA-Z0-9]+" placeholder="catlover123" required><br><br>
+                    <input class="input" type="password" id="login-password" minlength="8" name="password" placeholder="password123" required><br><br>
                     
-                    <input class="submit-btn" type="button" value="OK" onclick="submitLoginForm()">
+                    <button class="submit-btn" type="button" onclick="submitLoginForm()">OK</button>
                     
                     <div class="toggle-container">
                         <p>Don't have an account? <a href="#" onclick="showSignup(event)">Sign up here</a></p>
@@ -24,25 +25,21 @@
                 </section>
             </form>
         </div>
+        
         <div class="login-window hidden" id="signupWindow">
             <form id="signupForm">
                 <section>
                     <h1>Sign Up</h1>
-                    <input class="input" type="text" oninput="removeNumbers(event)" id="fname" name="fname" placeholder="first name" required><br><br>
-                    <input class="input" type="text" oninput="removeNumbers(event)" id="lname" name="lname" placeholder="last name" required><br><br>
-                    <input class="input" type="tel" oninput="formatPhoneNumber(event)" id="phone" name="phone" placeholder="phone number" maxlength="12" required><br><br>
-                    <input class="input" type="email" id="email" name="email" placeholder="email: local@domain.top" required><br><br>
-                    <input class="input" type="text" id="signup-username" name="username" pattern="[a-zA-Z0-9]+" placeholder="username" required><br><br>
-                    <input class="input" type="password" id="signup-password" minlength="8" name="password" placeholder="password" required><br><br>
-                    <input class="input" type="date" id="dob" name="dob" required><br><br>
+                    <input class="input" type="text" oninput="removeNumbers(event)" id="signup-firstname" placeholder="first name" required><br><br>
+                    <input class="input" type="text" oninput="removeNumbers(event)" id="signup-lastname" placeholder="family name" required><br><br>
                     
-                    <div class="textarea-container">
-                        <textarea class="input textarea-box" id="cat-likes" name="cat-likes" placeholder="What do you like about cats?" rows="4" oninput="countLetters(this)" required></textarea>
-                        <span class="word-counter" id="word-count-display">0/1000</span>
-                    </div> 
-                    <br><br>
+                    <input class="input" type="email" id="signup-email" placeholder="email: local@domain.top" required><br><br>
+                    <input class="input" type="text" id="signup-username" placeholder="username" required><br><br>
+                    <input class="input" type="password" id="signup-password" minlength="8" placeholder="password" required><br><br>
+                    <input class="input" type="date" id="signup-birthday" required><br><br>
+                    <input class="input" type="url" id="signup-profile-pic" placeholder="profile picture url (optional)"><br><br>
                     
-                    <input class="submit-btn" type="button" value="OK" onclick="submitSignupForm()">
+                    <button class="submit-btn" type="button" onclick="submitSignupForm()">OK</button>
                     
                     <div class="toggle-container">
                         <p>Already have an account? <a href="#" onclick="showLogin(event)">Log in here</a></p>
@@ -51,7 +48,9 @@
             </form>
         </div>
     </div>
-
+    <!-- 5. Toast container helper placeholder -->
+    <div id="modal-error"></div>
+    <div id="modal-success"></div>
 </body>
 
 </html>
