@@ -1,8 +1,9 @@
 import { showToast } from './toast.js'
 import { generateId } from './helper.js'
-import { saveArrayToStorage, getArrayFromStorage } from '../javascript/helper.js'
+import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from '../javascript/helper.js'
 import { httpService } from "./communication.js";
 import { renderPosts } from './main.js';
+import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
 
 let userId = "4"
 
@@ -66,16 +67,41 @@ export async function createPostAndPutInBackend() {
         return;
     }
 
+    let mediaUrls
+    let mediaUrl
+    let mediaType
+    let mediaPublicId 
+
+    if (selectedMediaFile) {
+        try {
+            mediaUrls = await uploadToCloudinary(selectedMediaFile);
+            mediaUrl = mediaUrls.url
+            mediaType = selectedMediaType;
+            mediaPublicId = mediaUrls.publicId;
+        }
+        catch (err) {
+            console.log("upload failed:", err);
+            showToast("media upload failed, posting without media", "main");
+
+            // IMPORTANT: do NOT return
+            mediaUrl = "";
+            mediaPublicId = "";
+            mediaType = "none";
+        }
+    }
+
     const newPost = {
         id: generateId(),
         user_id: Number(userId),
         title,
         description: desc,
-        mediaType: "none",
-        mediaUrl: "",
+        mediaType: mediaType,
+        mediaUrl: mediaUrl,
+        mediaPublicId: mediaPublicId,
         likedByUsers: [],
         createdAt: Date.now()
     };
+
 
     try {
         const createdPost = await httpService.post(
@@ -90,6 +116,7 @@ export async function createPostAndPutInBackend() {
 
         titleEl.value = "";
         descEl.value = "";
+        clearSelectedMedia();
 
         return createdPost;
     }
@@ -138,7 +165,7 @@ export async function editPostAndPutInBackend(postId) {
     };
 
     // optimistic UI update
-    posts[originalIndex] = {...updatedPost};
+    posts[originalIndex] = { ...updatedPost };
     renderPosts(posts);
 
     showToast(`updated post [${postId}]`, "main");
