@@ -67,26 +67,26 @@ export async function createPostAndPutInBackend() {
         return;
     }
 
-    let mediaUrls
-    let mediaUrl
-    let mediaType
-    let mediaPublicId 
+    let mediaUrl = null;
+    let mediaPublicId = null;
+    let mediaType = null;
 
     if (selectedMediaFile) {
         try {
-            mediaUrls = await uploadToCloudinary(selectedMediaFile);
-            mediaUrl = mediaUrls.url
+            const upload = await uploadToCloudinary(selectedMediaFile);
+
+            mediaUrl = upload.url;
+            mediaPublicId = upload.publicId;
             mediaType = selectedMediaType;
-            mediaPublicId = mediaUrls.publicId;
-        }
-        catch (err) {
+
+        } catch (err) {
             console.log("upload failed:", err);
             showToast("media upload failed, posting without media", "main");
 
-            // IMPORTANT: do NOT return
-            mediaUrl = "";
-            mediaPublicId = "";
-            mediaType = "none";
+            // 🚨 DO NOTHING ELSE
+            mediaUrl = null;
+            mediaPublicId = null;
+            mediaType = null;
         }
     }
 
@@ -312,8 +312,8 @@ export function createPost() {
         user_id: userId,
         title,
         description: desc,
-        mediaType: "none",
-        mediaUrl: "",
+        mediaType: null,
+        mediaUrl: null,
         likedByUsers: [],
         createdAt: Date.now()
     };
