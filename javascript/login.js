@@ -64,7 +64,7 @@ async function submitLoginForm() {
         console.log("Session started for:", loggedInUser.username);
         
         // Redirect to your main application dashboard
-        window.location.href = "../htmls/index.html"; 
+        window.location.href = "../htmls/main.html"; 
     }
 }
 

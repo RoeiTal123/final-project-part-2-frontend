@@ -1,15 +1,48 @@
 @import "../general/general.css";
 
+/* --- HOVER GLOW INTERFACE CONTROLS --- */
+:root {
+    --glow-size: 350px;                   /* Size of the tracking cursor light pool */
+    --glow-color: rgba(255, 183, 3, .8); /* Muted core tint color for external ambient aura */
+    --glow-border-tint: rgba(255, 183, 3, 0.2); /* Inner bezel stroke accent color on hover */
+    --glow-speed: 0s;                   /* Fade-in and fade-out animation latency */
+    
+    /* Global pixel fallbacks for initial coordinate positioning */
+    --mouse-x: 0px;
+    --mouse-y: 0px;
 
-@property --mouse-x {
-    syntax: '<length>';
-    initial-value: 0px;
-    inherits: true;
+    /* Proximity-driven strength: 0 (far from any post) to 1 (right over one).
+       Updated from JS based on distance to the nearest post-box. */
+    --glow-intensity: 0;
 }
-@property --mouse-y {
-    syntax: '<length>';
-    initial-value: 0px;
-    inherits: true;
+
+/* --- GLOBAL CURSOR GLOW LAYER --- */
+/* Single fixed overlay that tracks the mouse across the viewport.
+   Sits behind the post boxes (z-index 0, below their z-index: 1) so the
+   glow reads as light spilling out from underneath the cards rather than
+   sitting on top of them. Intensity scales with proximity to a post. */
+.cursor-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.cursor-glow::before {
+    content: "";
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    top: var(--mouse-y);
+    left: var(--mouse-x);
+    border-radius: 50%;
+    box-shadow: 0 0 calc(60px + 80px * var(--glow-intensity)) calc(10px + 40px * var(--glow-intensity)) var(--glow-color);
+    opacity: var(--glow-intensity);
+    transition: opacity var(--glow-speed) ease, box-shadow var(--glow-speed) ease;
 }
 
 @media (min-width: 1024px) {
@@ -99,15 +132,13 @@
 .community-name.green{
     color: green;
 }
-/*  */
 
 .posts-container {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    
-    margin-inline: -16px; 
-    padding-inline: 16px;
+    margin-inline: -40px; 
+    padding-inline: 40px;
 }
 
 .post-filter{
@@ -126,7 +157,7 @@
     scrollbar-color: lightgray var(--white);
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding-inline: 26px; 
+    padding-inline: 40px; 
 }
 
 .cat-posts-box .post-box {
@@ -136,13 +167,26 @@
     width: 100%;
     border-radius: 16px;
     background: linear-gradient(to bottom, var(--white) 0%, var(--blue-four) 100%);
-    overflow: hidden; 
-    position: relative;
+    
+    overflow: visible; 
+    position: relative; 
+    
+    transform-style: preserve-3d;
+    z-index: 1;
 
     box-shadow: 
       0 4px 12px rgba(0, 0, 0, 0.03),
       0 12px 32px rgba(0, 0, 0, 0.06),
       inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+      
+    transition: box-shadow 0.3s ease;
+}
+
+.cat-posts-box .post-box:hover {
+    box-shadow: 
+      0 6px 16px rgba(0, 0, 0, 0.04),
+      0 16px 40px rgba(0, 0, 0, 0.08),
+      inset 0 0 0 1px var(--glow-border-tint); 
 }
 
 .post-box .post-header {
@@ -221,7 +265,6 @@
     padding: 0 16px 16px 16px;
 }
 
-/* STEP 1 FIX: Floating media window setup to bypass clipped layouts */
 .post-box .post-media {
     display: flex;
     align-items: center;
@@ -229,10 +272,10 @@
     width: auto;
     flex: 1;
     max-height: 280px;
-    margin: 0 16px 16px 16px; /* Added margins to let media sit neatly inside card */
-    border-radius: 12px;       /* Individual soft framing */
+    margin: 0 16px 16px 16px; 
+    border-radius: 12px;       
     overflow: hidden;
-    background-color: rgba(0, 0, 0, 0.03); /* Soft, low opacity background placeholder */
+    background-color: rgba(0, 0, 0, 0.03); 
     box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
@@ -244,7 +287,6 @@
     background-color: transparent; 
 }
 
-/* STEP 1 FIX: Removed harsh flat black line border-block-start */
 .post-box .post-footer {
     display: flex;
     flex-direction: row;
@@ -252,7 +294,6 @@
     gap: 16px;
     border-radius: 0 0 16px 16px;
     background-color: var(--white);
-    /* Soft top-down depth separator */
     box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05); 
 }
 
@@ -265,7 +306,6 @@
     min-width: 210px;
 }
 
-/* STEP 1 FIX: Mirroring clean styles to post-creation-box */
 .post-creation-box{
     display: flex;
     flex-direction: column;
@@ -326,8 +366,6 @@
     background-color: black;
 }
 
-/* --- Post Content Typography Hierarchy --- */
-
 .post-user-name {
     font-weight: 700;
     color: #1a1a1ac9;
@@ -338,18 +376,26 @@
     font-weight: 600;
     font-size: 1.2rem;
     color: #000000cc;
-    margin-block-start: 4px; /* Creates separation from the username */
+    margin-block-start: 4px; 
 }
 
 .post-date {
     font-size: 0.85rem;
-    color: #757575; /* Muted gray so it sits in the background */
+    color: #757575; 
     font-weight: 400;
 }
 
 .post-box .post-description {
     padding: 0 16px 16px 16px;
     font-size: 0.95rem;
-    line-height: 1.5; /* Relaxes spacing between lines for readability */
-    color: #2d2d2d;   /* Smooth off-black for text comfort */
+    line-height: 1.5; 
+    color: #2d2d2d;   
+}
+
+.post-box .post-header,
+.post-box .post-description,
+.post-box .post-media,
+.post-box .post-footer {
+    position: relative;
+    z-index: 2;
 }

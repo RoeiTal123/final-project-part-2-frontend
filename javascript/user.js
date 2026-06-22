@@ -72,3 +72,22 @@ export async function checkForUser(username, password) {
         return null;
     }
 }
+
+export function getLoggedInUser() {
+    try {
+        const userString = localStorage.getItem("loggedUser");
+        return userString ? JSON.parse(userString) : null;
+    } catch (err) {
+        console.error("❌ Failed to parse loggedUser from localStorage:", err);
+        return null;
+    }
+}
+
+export function isLoggedIn() {
+    return getLoggedInUser() !== null;
+}
+
+export function logoutUser() {
+    localStorage.removeItem("loggedUser");
+    window.location.href = "../htmls/login.html";
+}
