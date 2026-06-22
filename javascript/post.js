@@ -380,7 +380,7 @@ export function deletePost(postId = "") {
 }
 
 export async function toggleLike(postId, userId) {
-    const post = posts.find(p => p._id === postId);
+    const post = posts.find(p => p.id === postId);
     if (!post) return;
 
     const liked = post.likedByUsers.includes(userId);
@@ -390,11 +390,15 @@ export async function toggleLike(postId, userId) {
             await httpService.delete(`posts/${postId}/likes`, { userId });
 
             post.likedByUsers = post.likedByUsers.filter(id => id !== userId);
+
+            showToast("unliked post","main");
         } else {
             await httpService.post(`posts/${postId}/likes`, { userId });
 
             post.likedByUsers.push(userId);
+            showToast("liked post","main");
         }
+        renderPosts(posts)
 
         saveArrayToStorage("posts", posts);
     } catch (err) {

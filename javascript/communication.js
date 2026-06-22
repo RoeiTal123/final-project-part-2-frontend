@@ -29,7 +29,7 @@ async function ajax(endpoint, method = 'GET', data = null) {
     }
 
     const hasBody =
-    ["POST", "PUT", "PATCH"].includes(method) &&
+    ["POST", "PUT", "DELETE"].includes(method) &&
     data !== null &&
     data !== undefined;
 

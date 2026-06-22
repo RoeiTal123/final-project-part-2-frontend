@@ -91,7 +91,7 @@ document.addEventListener("click", (e) => {
     const likeBtn = e.target.closest(".like-btn");
     if (!likeBtn) return;
 
-    const postId = likeBtn.dataset.id;
+    const postId = Number(likeBtn.dataset.id);
     const loggedUser = getLoggedInUser()
 
     toggleLike(postId, loggedUser.id);
@@ -176,11 +176,8 @@ input.addEventListener("change", (e) => {
 });
 
 function Main() {
-    //renderPosts()
     updateMainContent()
     //renderCommunities()
-    // queryFromBackend()
-    // postByIdFromBackend("5")
 }
 
 export async function renderPosts(list) { // function that renders updates posts
@@ -269,11 +266,12 @@ function getTimeAgo(timestamp) {
 }
 
 function isLiked(postId, userId = userId) { // checks if post with id = postId is liked by user with id = Userid
-    const post = query().find(p => p._id === postId);
+    const post = query().find(p => p.id === postId);
     return post ? post.likedByUsers.includes(userId) : false;
 }
 
-function likePost(postId) {
+function likePost(postId, userId) {
+    console.log("like")
     
     const loggedUser = getLoggedInUser()
     if (!postId) return;
