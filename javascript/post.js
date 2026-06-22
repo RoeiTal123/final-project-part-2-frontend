@@ -4,8 +4,7 @@ import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from '../
 import { httpService } from "./communication.js";
 import { renderPosts } from './main.js';
 import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
-
-let userId = "4"
+import { getLoggedInUser } from './user.js';
 
 let postsKey = "posts"
 
@@ -57,6 +56,8 @@ export async function createPostAndPutInBackend() {
     const title = titleEl.value.trim()
     const desc = descEl.value.trim()
 
+    const loggedUser = getLoggedInUser()
+
     if (!title) {
         showToast("missing title", "main");
         return;
@@ -91,7 +92,7 @@ export async function createPostAndPutInBackend() {
     }
 
     const newPost = {
-        user_id: Number(userId),
+        user_id: loggedUser.id,
         title,
         description: desc,
         mediaType: mediaType,
@@ -196,7 +197,8 @@ export async function editPostAndPutInBackend(postId) {
 }
 
 export async function deletePostFromBackend(postId) {
-    const userid = Number(userId)
+    
+    const loggedUser = getLoggedInUser()
     if (!postId) {
         showToast("invalid post", "main");
         return;
@@ -211,7 +213,7 @@ export async function deletePostFromBackend(postId) {
         return;
     }
 
-    if (post.user_id !== userid) {
+    if (post.user_id !== loggedUser.id) {
         showToast("not allowed", "main");
         return;
     }
@@ -305,6 +307,8 @@ export function createPost() {
 
     const title = titleEl.value.trim()
     const desc = descEl.value.trim()
+    
+    const loggedUser = getLoggedInUser()
 
     if (!title) {
         showToast("missing title", "main");
@@ -318,7 +322,7 @@ export function createPost() {
 
     const newPost = {
         id: generateId(),
-        user_id: userId,
+        user_id: loggedUser.id,
         title,
         description: desc,
         mediaType: null,
@@ -346,6 +350,8 @@ export function createPost() {
 // DELETE POST
 // =====================
 export function deletePost(postId = "") {
+
+    const loggedUser = getLoggedInUser()
     if (!postId) {
         showToast("invalid post", "main");
         return;
@@ -358,7 +364,7 @@ export function deletePost(postId = "") {
         return;
     }
 
-    if (post._userid !== userId) {
+    if (post._userid !== loggedUser.id) {
         showToast("not allowed", "main");
         return;
     }
