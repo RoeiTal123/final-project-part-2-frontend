@@ -393,5 +393,5 @@ export async function toggleLike(postId, userId) {
         saveArrayToStorage("posts", posts);
     } catch (err) {
         console.log("❌ toggleLike failed:", err);
-    }
+    } 
 }
