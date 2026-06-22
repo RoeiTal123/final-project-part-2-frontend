@@ -1,5 +1,17 @@
 @import "../general/general.css";
 
+
+@property --mouse-x {
+    syntax: '<length>';
+    initial-value: 0px;
+    inherits: true;
+}
+@property --mouse-y {
+    syntax: '<length>';
+    initial-value: 0px;
+    inherits: true;
+}
+
 @media (min-width: 1024px) {
     .cat-communities-box {
         display: flex;
@@ -93,7 +105,9 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-
+    
+    margin-inline: -16px; 
+    padding-inline: 16px;
 }
 
 .post-filter{
@@ -110,11 +124,9 @@
     gap: 32px;
     overflow-y: auto;
     scrollbar-color: lightgray var(--white);
-
     scrollbar-width: none;
-
-    /* Hide scrollbar for IE, Edge Legacy, and Opera */
     -ms-overflow-style: none;
+    padding-inline: 26px; 
 }
 
 .cat-posts-box .post-box {
@@ -122,9 +134,15 @@
     flex-direction: column;
     flex-shrink: 0;
     width: 100%;
-    border: 1px solid black;
     border-radius: 16px;
     background: linear-gradient(to bottom, var(--white) 0%, var(--blue-four) 100%);
+    overflow: hidden; 
+    position: relative;
+
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.03),
+      0 12px 32px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
 
 .post-box .post-header {
@@ -203,33 +221,39 @@
     padding: 0 16px 16px 16px;
 }
 
+/* STEP 1 FIX: Floating media window setup to bypass clipped layouts */
 .post-box .post-media {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: auto;
     flex: 1;
     max-height: 280px;
+    margin: 0 16px 16px 16px; /* Added margins to let media sit neatly inside card */
+    border-radius: 12px;       /* Individual soft framing */
+    overflow: hidden;
+    background-color: rgba(0, 0, 0, 0.03); /* Soft, low opacity background placeholder */
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
 }
-
 
 .post-media .post-image,
 .post-video {
     width: 100%;
     max-height: 280px;
     object-fit: contain;
-    background-color: black;
+    background-color: transparent; 
 }
 
-
+/* STEP 1 FIX: Removed harsh flat black line border-block-start */
 .post-box .post-footer {
     display: flex;
     flex-direction: row;
-    border-block-start: 1px solid black;
     padding: 16px;
     gap: 16px;
     border-radius: 0 0 16px 16px;
     background-color: var(--white);
+    /* Soft top-down depth separator */
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05); 
 }
 
 .like-btn:hover {
@@ -241,15 +265,19 @@
     min-width: 210px;
 }
 
+/* STEP 1 FIX: Mirroring clean styles to post-creation-box */
 .post-creation-box{
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
     width: 100%;
-    border: 1px solid black;
     border-radius: 16px;
     background: linear-gradient(to bottom, var(--white) 0%, var(--blue-four) 100%);
     height: 450px;
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.03),
+      0 12px 32px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.6);
 }
 
 .post-creation-box .post-header {
@@ -288,7 +316,6 @@
     max-height: 160px;
 }
 
-
 .input-media-image {
     max-height: 100%;
     background-color: black;
@@ -297,4 +324,32 @@
 .input-media-video {
     max-height: 100%;
     background-color: black;
+}
+
+/* --- Post Content Typography Hierarchy --- */
+
+.post-user-name {
+    font-weight: 700;
+    color: #1a1a1ac9;
+    font-size: 1.05rem;
+}
+
+.post-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #000000cc;
+    margin-block-start: 4px; /* Creates separation from the username */
+}
+
+.post-date {
+    font-size: 0.85rem;
+    color: #757575; /* Muted gray so it sits in the background */
+    font-weight: 400;
+}
+
+.post-box .post-description {
+    padding: 0 16px 16px 16px;
+    font-size: 0.95rem;
+    line-height: 1.5; /* Relaxes spacing between lines for readability */
+    color: #2d2d2d;   /* Smooth off-black for text comfort */
 }
