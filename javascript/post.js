@@ -340,7 +340,7 @@ export function createPost() {
     descEl.value = "";
 
     showToast(`created post [${newPost.id}]`, "main");
-}
+} 
 
 // =====================
 // DELETE POST
