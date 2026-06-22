@@ -1,3 +1,5 @@
+import { showToast } from "./toast"
+
 document.addEventListener("DOMContentLoaded", Main)
 
 let isDragging = false
@@ -6,14 +8,51 @@ let startY = 0
 let mapX = 0
 let mapY = 0
 let clickStartTime = 0
+let locationX = 0
+let locationY = 0
+
+let userId = 4 // in this case
+
+export function getIndexs(){
+    return {x: locationX,y: locationY}
+}
 
 const container = document.getElementById('map-container')
 const map = document.getElementById('map-image')
 const rect = container.getBoundingClientRect()
 
+
+const nameElement = document.getElementById("location-name-input")
+const descriptionElement = document.getElementById("location-description-input")
+
+const mapContainer = document.getElementById("map-container");
+
+mapContainer.addEventListener("mousedown", startMapDrag);
+mapContainer.addEventListener("mousemove", whileMapDragging);
+mapContainer.addEventListener("mouseup", stopMapDrag);
+mapContainer.addEventListener("mouseleave", stopMapDrag);
+
+const mapImage = document.getElementById("map-image");
+
+mapImage.addEventListener("dragstart", (e) => {
+    e.preventDefault();
+});
+
+const modalWindow = document.getElementById("modal-window");
+
+modalWindow.addEventListener("click", (e) => {
+    e.stopPropagation();
+});
+
+document.querySelector(".cancel-button")
+    .addEventListener("click", toggleModal);
+
+document.querySelector(".confirm-button")
+    .addEventListener("click", confirmLocation);
+
 const locations = [{
-    _id: "1", locationName: "", indexs: { x: 1, y: 1 }, descriptionName: "",
-    locationImageURL: "", Feeders: ["2"], _ownerid: "1"
+    id: 1, locationName: "", indexs: { x: 1, y: 1 }, descriptionName: "",
+    locationImageURL: "", Feeders: [2], ownerid: 1
 }]
 
 function startMapDrag(event) {
@@ -68,7 +107,7 @@ function stopMapDrag() {
         const originalX = Math.round(mouseXInContainer - mapX)
         const originalY = Math.round(mouseYInContainer - mapY)
 
-       // console.log(`Original Map Target -> X: ${originalX}px, Y: ${originalY}px`)
+        // console.log(`Original Map Target -> X: ${originalX}px, Y: ${originalY}px`)
 
         // You can trigger your popup window here now!
         toggleModal(originalX, originalY)
@@ -101,6 +140,9 @@ function toggleModal(originalX, originalY) {
         overlay.style.display = 'flex'
         setLocation(originalX, originalY)
     }
+
+    nameElement.value = ""
+    descriptionElement.value = ""
 }
 
 function Main() {
@@ -110,10 +152,13 @@ function Main() {
 function setLocation(originalX, originalY) {
     const modalHeader = document.getElementById("modal-header")
     modalHeader.innerHTML = `<span>Create new location</span><span class="coords">x: ${originalX} , y: ${originalY}</span>`
+    locationX = originalX
+    locationY = originalY
 }
 
 function confirmLocation() {
     const overlay = document.getElementById('modal-overlay')
+
 
     if (overlay.style.display === 'flex') {
         overlay.style.display = 'none'

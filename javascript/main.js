@@ -35,7 +35,7 @@ document.addEventListener("click", async (e) => {
 
         // reset UI inputs
         document.getElementById("post-title-input").value = "";
-        document.getElementById("post-descrption-input").value = "";
+        document.getElementById("post-description-input").value = "";
 
         createBtn.textContent = "Create Post";
 
@@ -58,7 +58,7 @@ document.addEventListener("click", async (e) => {
         const post = posts.find(p => p.id === postId);
 
         document.getElementById("post-title-input").value = post.title;
-        document.getElementById("post-descrption-input").value = post.description;
+        document.getElementById("post-description-input").value = post.description;
 
         const createBtn = document.querySelector(".create-post-btn");
 

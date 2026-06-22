@@ -212,7 +212,7 @@ export async function postByIdFromBackend(postId) {
 
 export async function createPostAndPutInBackend() {
     const titleEl = document.getElementById("post-title-input")
-    const descEl = document.getElementById("post-descrption-input")
+    const descEl = document.getElementById("post-description-input")
 
     const title = titleEl.value.trim()
     const desc = descEl.value.trim()
@@ -239,7 +239,7 @@ export async function createPostAndPutInBackend() {
     };
 
     try {
-        const createdPost = await httpService.put(
+        const createdPost = await httpService.post(
             "posts",
             newPost
         );
@@ -262,7 +262,7 @@ export async function createPostAndPutInBackend() {
 
 export async function editPostAndPutInBackend(postId) {
     const titleEl = document.getElementById("post-title-input");
-    const descEl = document.getElementById("post-descrption-input");
+    const descEl = document.getElementById("post-description-input");
 
     const title = titleEl.value.trim();
     const desc = descEl.value.trim();
@@ -294,12 +294,12 @@ export async function editPostAndPutInBackend(postId) {
     // copy + overwrite
     const updatedPost = {
         ...originalPost,
-        title,
+        title: title,
         description: desc
     };
 
     // optimistic UI update
-    posts[originalIndex] = updatedPost;
+    posts[originalIndex] = {...updatedPost};
     renderPosts(posts);
 
     showToast(`updated post [${postId}]`, "main");
@@ -378,7 +378,7 @@ export async function thePosts() {
 // =====================
 export function createPost() {
     const titleEl = document.getElementById("post-title-input")
-    const descEl = document.getElementById("post-descrption-input")
+    const descEl = document.getElementById("post-description-input")
 
     const title = titleEl.value.trim()
     const desc = descEl.value.trim()

@@ -4,7 +4,7 @@
 <head>
     <title>Cat Sanctuary</title>
     <link rel="stylesheet" href="../design/pages/map.css">
-    <script src="../javascript/map.js" defer></script>
+    <script type="module" src="../javascript/map.js" defer></script>
 </head>
 
 <body>
@@ -19,20 +19,19 @@
             </a>
         </div>
     </header>
-    <div id="map-container" class="map-container" onmousedown="startMapDrag(event)"
-        onmousemove="whileMapDragging(event)" onmouseup="stopMapDrag()" onmouseleave="stopMapDrag()">
+
+    <div id="map-container" class="map-container">
         <img id="map-image" class="map" src="../design/images/map.png" ondragstart="return false;">
     </div>
 
     <div id="modal-overlay" class="modal-overlay">
-
-        <div id="modal-window" class="modal-window" onclick="event.stopPropagation()">
+        <div id="modal-window" class="modal-window">
             <div class="modal-header" id="modal-header">
                 <!-- <span>Create new location</span> -->
             </div>
-            <div><span>Location name: </span><input type="text" placeholder="location name" name="locationName"/></div>
+            <div><span>Location name: </span><input type="text" placeholder="location name" name="locationName" id="location-name-input"/></div>
             <div class="modal-grid">
-                <textarea class="location-description" id="location-description" placeholder="describe the location here"></textarea>
+                <textarea class="location-description" id="location-description-input" placeholder="describe the location here"></textarea>
                 <div class="file-input">  
                 <input class="file-input-button" type="file" id="file-input"/>
                 <label for="file-input">
@@ -68,11 +67,12 @@
                 </div>
             </div>
             <div class="modal-buttons">
-                <button class="cancel-button" onclick="toggleModal()">Cancel</button>
-                <button class="confirm-button" onclick="confirmLocation()">Confirm</button>
+                <button class="cancel-button">Cancel</button>
+                <button class="confirm-button">Confirm</button>
             </div>
         </div>
     </div>
+
     <footer class="header-mobile">
         <a a href="../htmls/main.html" class="button-box">
             <svg xmlns="http://www.w3.org/2000/svg" width="64px" height="64px" viewBox="0 0 24 24" fill="none">
@@ -92,6 +92,8 @@
             <img class="profile-logo" src="../design/images/profile pictures/man_2.jpg" />
         </a>
     </footer>
+
+    <div class="notification-modal-box" id="modal-map"></div>
 </body>
 
 </html>
