@@ -2,7 +2,7 @@ let toastEl = null;
 let hideTimeout = null;
 let pinned = false;
 
-export function showToast(message, pageName = "main", type = 'warning', duration = 10000) {
+export function showToast(message, pageName = "main", type = 'warning', duration = 1500) {
   const containerId = `modal-${pageName}`;
   const container = document.getElementById(containerId);
   if (!container) {
