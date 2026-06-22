@@ -96,7 +96,40 @@ radios.forEach(radio => {
         renderPosts(postsToRender);
     });
 });
+const cursorGlow = document.getElementById("cursor-glow");
+ 
+// How far (in px) from a post's edge the glow starts ramping up.
+// Inside this radius, intensity scales from 0 (at the edge) to 1 (touching/over the post).
+const GLOW_FALLOFF_DISTANCE = 250;
+ 
+document.addEventListener('mousemove', (e) => {
+    cursorGlow.style.setProperty('--mouse-x', `${e.clientX}px`);
+    cursorGlow.style.setProperty('--mouse-y', `${e.clientY}px`);
+ 
+    const intensity = getNearestPostIntensity(e.clientX, e.clientY);
+    cursorGlow.style.setProperty('--glow-intensity', intensity);
+});
 
+function getNearestPostIntensity(x, y) {
+    const postBoxes = document.querySelectorAll(".post-box");
+    if (postBoxes.length === 0) return 0;
+ 
+    let minDistance = Infinity;
+ 
+    postBoxes.forEach((box) => {
+        const rect = box.getBoundingClientRect();
+ 
+        // Distance from the point to the box's edge (0 if the point is inside it).
+        const dx = Math.max(rect.left - x, 0, x - rect.right);
+        const dy = Math.max(rect.top - y, 0, y - rect.bottom);
+        const distance = Math.hypot(dx, dy);
+ 
+        if (distance < minDistance) minDistance = distance;
+    });
+ 
+    const intensity = 1 - minDistance / GLOW_FALLOFF_DISTANCE;
+    return Math.max(0, Math.min(1, intensity));
+}
 
 const input = document.getElementById("post-media-input");
 const mediaBox = document.getElementById("media-box");
@@ -331,8 +364,7 @@ export function renderPosts(list) { // function that renders updates posts
                   <span>${post.likedByUsers.length}</span>
                 </div>
             </div>`;
-        }).
-            join("")
+        }).join("")
     }
 }
 
