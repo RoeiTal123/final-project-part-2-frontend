@@ -1,247 +1,105 @@
-import { showToast } from "./toast"
+import { showToast } from "./toast";
 
-document.addEventListener("DOMContentLoaded", Main)
+document.addEventListener("DOMContentLoaded", Main);
 
-let isDragging = false
-let startX = 0
-let startY = 0
-let mapX = 0
-let mapY = 0
-let clickStartTime = 0
-let locationX = 0
-let locationY = 0
+let mapInstance; 
+let currentSelectedLat = 0;
+let currentSelectedLng = 0;
+let userId = 4;
 
-let zoomScale = 1.0;       // Starting scale (100%)
-const minZoom = 0.5;       // Minimum zoom out limit (50%)
-const maxZoom = 2.0;       // Maximum zoom in limit (200%)
-const zoomStep = 0.1;      // How fast the zoom changes per wheel notch
-let userId = 4 // in this case
-
-export function getIndexs(){
-    return {x: locationX,y: locationY}
-}
-
-const container = document.getElementById('map-container')
-const map = document.getElementById('map-image')
-const nameElement = document.getElementById("location-name-input")
-const descriptionElement = document.getElementById("location-description-input")
-const mapContainer = document.getElementById("map-container");
-
-mapContainer.addEventListener("mousedown", (e) => startMapDrag(e));
-mapContainer.addEventListener("mousemove", (e) => whileMapDragging(e));
-mapContainer.addEventListener("mouseup", (e) => stopMapDrag(e));
-mapContainer.addEventListener("mouseleave", (e) => stopMapDrag(e));
-container.addEventListener("wheel", handleMapZoom, { passive: false });
-
-const mapImage = document.getElementById("map-image");
-
-mapImage.addEventListener("dragstart", (e) => {
-    e.preventDefault();
-});
-
-const modalWindow = document.getElementById("modal-window");
-
-modalWindow.addEventListener("click", (e) => {
-    e.stopPropagation();
-});
-
-document.querySelector(".cancel-button")
-    .addEventListener("click", toggleModal);
-
-document.querySelector(".confirm-button")
-    .addEventListener("click", confirmLocation);
-
-const locations = [{ id: 1, location_name: "cat sanctuary", Xindexs: 250, Yindex: 250 , 
-                     description_name: "heaven for cats", location_image_url: "", Feeders: [1, 2], owner_id: 1}]
-
-function updateMapTransform() {
-    map.style.transform = `translate(${mapX}px, ${mapY}px) scale(${zoomScale})`;
-}
-
-function startMapDrag(event) {
-    isDragging = true
-    clickStartTime = Date.now()
-}
-
-function centerMap() {
-    mapX = (container.clientWidth - map.clientWidth) / 2;
-    mapY = (container.clientHeight - map.clientHeight) / 2;
-    updateMapTransform();
-}
-
-
-// Triggered by onmousemove="whileMapDragging(event)"
-function whileMapDragging(event) {
-    if (!isDragging || !container || !map) return;
-
-    let targetX = mapX + event.movementX;
-    let targetY = mapY + event.movementY;
-
-    // Boundary math adjusted for the current zoom factor
-    const minX = container.clientWidth - (map.clientWidth * zoomScale);
-    const minY = container.clientHeight - (map.clientHeight * zoomScale);
-
-    // If the zoomed map is smaller than the container, lock it to top-left
-    const limitX = minX > 0 ? 0 : minX;
-    const limitY = minY > 0 ? 0 : minY;
-
-    if (targetX > 0) targetX = 0;
-    if (targetY > 0) targetY = 0;
-    if (targetX < limitX) targetX = limitX;
-    if (targetY < minY) targetY = limitY;
-
-    mapX = targetX;
-    mapY = targetY;
-    
-    // Call the unified rendering function
-    updateMapTransform();
-}
-
-
-// Triggered by onmouseup and onmouseleave
-function stopMapDrag(event) {
-    if (!isDragging) return;
-
-    isDragging = false;
-    const clickDuration = Date.now() - clickStartTime;
-
-    if (clickDuration < 100) {
-        const dynamicRect = container.getBoundingClientRect();
-
-        const mouseXInContainer = event.clientX - dynamicRect.left;
-        const mouseYInContainer = event.clientY - dynamicRect.top;
-        
-        // ADJUSTMENT: Divide the container offsets by the zoom scale factor
-        const originalX = Math.round((mouseXInContainer - mapX) / zoomScale);
-        const originalY = Math.round((mouseYInContainer - mapY) / zoomScale);
-
-        toggleModal(originalX, originalY);
+// Mock database entries (Using Lat / Lng instead of custom grid pixel metrics)
+const locations = [
+    {
+        id: 1, 
+        locationName: "Main Sanctuary", 
+        coords: { lat: 51.505, lng: -0.09 }, 
+        descriptionName: "Main feeding zone",
+        Feeders: [2], 
+        ownerid: 1
     }
-}
+];
 
-function handleMapZoom(event) {
-    event.preventDefault();
-
-    const dynamicRect = container.getBoundingClientRect();
-    
-    // 1. Locate the mouse pointer relative to the viewport container
-    const mouseX = event.clientX - dynamicRect.left;
-    const mouseY = event.clientY - dynamicRect.top;
-
-    // 2. Identify the exact pixel point under the cursor before scaling
-    const mapPointX = (mouseX - mapX) / zoomScale;
-    const mapPointY = (mouseY - mapY) / zoomScale;
-
-    // 3. Apply the zoom increment
-    const oldScale = zoomScale;
-    if (event.deltaY < 0) {
-        zoomScale = Math.min(maxZoom, zoomScale + zoomStep);
-    } else {
-        zoomScale = Math.max(minZoom, zoomScale - zoomStep);
-    }
-
-    // 4. Adjust pan offsets so the pixel point remains perfectly fixed under the cursor
-    mapX = mouseX - (mapPointX * zoomScale);
-    mapY = mouseY - (mapPointY * zoomScale);
-
-    // 5. Enforce boundaries instantly after zooming
-    const minX = container.clientWidth - (map.clientWidth * zoomScale);
-    const minY = container.clientHeight - (map.clientHeight * zoomScale);
-    
-    if (mapX > 0) mapX = 0;
-    if (mapY > 0) mapY = 0;
-    if (mapX < minX && minX < 0) mapX = minX;
-    if (mapY < minY && minY < 0) mapY = minY;
-
-    updateMapTransform();
-}
-
-function printMapCoordinates(event) {
-
-    // 1. Find where the mouse clicked relative to the container box
-    const mouseXInContainer = event.clientX - rect.left
-    const mouseYInContainer = event.clientY - rect.top
-
-    // 2. Subtract mapX and mapY to find the coordinate on the ORIGINAL image
-    // (Since mapX/Y are negative numbers, subtracting them adds them back)
-    const originalX = Math.round(mouseXInContainer - mapX)
-    const originalY = Math.round(mouseYInContainer - mapY)
-
-    // 3. Print the values to your browser console for future copy-pasting
-    console.log(`Original Map Target -> X: ${originalX}px, Y: ${originalY}px`)
-
-    // OPTIONAL: If you want to use these values right away to open your modal window
-}
-
-function toggleModal(originalX, originalY) {
-    const overlay = document.getElementById('modal-overlay')
-
-    if (overlay.style.display === 'flex') {
-        overlay.style.display = 'none'
-    } else {
-        overlay.style.display = 'flex'
-        setLocation(originalX, originalY)
-    }
-
-    nameElement.value = ""
-    descriptionElement.value = ""
-}
+const nameElement = document.getElementById("location-name-input");
+const descriptionElement = document.getElementById("location-description-input");
 
 function Main() {
-    centerMap()
+    initMap();
+    renderExistingPins();
+
+    // Attach form modal action handlers
+    document.querySelector(".cancel-button").addEventListener("click", () => toggleModal());
+    document.querySelector(".confirm-button").addEventListener("click", confirmLocation);
 }
 
-function setLocation(originalX, originalY) {
-    const modalHeader = document.getElementById("modal-header")
-    modalHeader.innerHTML = `<span>Create new location</span><span class="coords">x: ${originalX} , y: ${originalY}</span>`
-    locationX = originalX
-    locationY = originalY
+function initMap() {
+    // Instantiate the main engine system
+    mapInstance = L.map('map-container', {
+        minZoom: 2,
+        maxZoom: 18,
+        zoomControl: true
+    }).setView([51.505, -0.09], 14); // Set the initial center coordinate focus point
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+    }).addTo(mapInstance);
+
+    // REFLOW TRICK: Tells the map engine to recalculate container space right after the layout structures paint
+    setTimeout(() => {
+        mapInstance.invalidateSize();
+    }, 100);
+
+    // Hook into Leaflet's contextual click capture event pipeline
+    mapInstance.on('click', handleMapClick);
+}
+
+function handleMapClick(e) {
+    // Leaflet isolates context automatically: this only runs if the user didn't drag!
+    currentSelectedLat = e.latlng.lat;
+    currentSelectedLng = e.latlng.lng;
+
+    toggleModal(currentSelectedLat, currentSelectedLng);
+}
+
+function toggleModal(lat, lng) {
+    const overlay = document.getElementById('modal-overlay');
+
+    if (overlay.style.display === 'flex') {
+        overlay.style.display = 'none';
+    } else {
+        overlay.style.display = 'flex';
+        
+        // Update form layout modal header coordinates view
+        const modalHeader = document.getElementById("modal-header");
+        modalHeader.innerHTML = `<span>Create new location</span><span class="coords">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</span>`;
+    }
+
+    nameElement.value = "";
+    descriptionElement.value = "";
 }
 
 function confirmLocation() {
-    const overlay = document.getElementById('modal-overlay')
+    const name = nameElement.value.trim();
+    const description = descriptionElement.value.trim();
 
-
-    if (overlay.style.display === 'flex') {
-        overlay.style.display = 'none'
-    } else {
-        overlay.style.display = 'flex'
+    if (!name) {
+        showToast("Please enter a location name.");
+        return;
     }
-    console.log("location added")
+
+    // Program step logic: Save coordinates directly onto our map instance layer array view
+    const newLocationMarker = L.marker([currentSelectedLat, currentSelectedLng]).addTo(mapInstance);
+    
+    // Bind an integrated popup bubble overlay info context directly onto the pin marker node
+    newLocationMarker.bindPopup(`<b>${name}</b><br>${description}`).openPopup();
+
+    toggleModal();
+    console.log("New tracking location data successfully rendered onto system layout maps:", currentSelectedLat, currentSelectedLng);
 }
 
-function renderNewLocationFeederList() {
-
-}
-
-function renderFeeders(locationId = "1") { // function that renders feeders of the location
-    // console.log(list)
-    console.log("feeders rendered")
-    const location = locations.find(locationInList => locationInList._id === locationId)
-    const feederids = [...location.Feeders]
-    const feedersContainer = document.getElementById("feeders-list") // creates a 'pointer' to the container so we could interract with it
-    if (feeders != null) {
-
-        feedersContainer.innerHTML = feederids.map(feederId => {
-
-            const feeder = users.find(user => user._id === feederId)
-            if (!feeder) return ''
-
-            return `
-            <div class="feeder-box">
-            
-                <div class="feeder-left-group">
-                    <a href="../htmls/profile.html?id=${feederId}" class="feeder-user">
-                       <img src="${feeder.profilePicURL || 'default-avatar.png'}" alt="${feeder.fullname}'s avatar" />
-                    </a> 
-                    <div class="feeder-user-name">${feeder.fullname}</div>
-                </div>
-
-                <div class="feeder-role">
-                    ${(feeder._id === location._ownerid) ? 'owner' : 'feeder'}
-                </div>
-            </div>
-            `;
-        }).join('')
-    }
+function renderExistingPins() {
+    // Loop through your database records collection to mount existing array structures
+    locations.forEach(loc => {
+        const marker = L.marker([loc.coords.lat, loc.coords.lng]).addTo(mapInstance);
+        marker.bindPopup(`<b>${loc.locationName}</b><br>${loc.descriptionName}`);
+    });
 }
