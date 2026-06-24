@@ -11,6 +11,10 @@ let clickStartTime = 0
 let locationX = 0
 let locationY = 0
 
+let zoomScale = 1.0;       // Starting scale (100%)
+const minZoom = 0.5;       // Minimum zoom out limit (50%)
+const maxZoom = 2.0;       // Maximum zoom in limit (200%)
+const zoomStep = 0.1;      // How fast the zoom changes per wheel notch
 let userId = 4 // in this case
 
 export function getIndexs(){
@@ -19,18 +23,15 @@ export function getIndexs(){
 
 const container = document.getElementById('map-container')
 const map = document.getElementById('map-image')
-const rect = container.getBoundingClientRect()
-
-
 const nameElement = document.getElementById("location-name-input")
 const descriptionElement = document.getElementById("location-description-input")
-
 const mapContainer = document.getElementById("map-container");
 
-mapContainer.addEventListener("mousedown", startMapDrag);
-mapContainer.addEventListener("mousemove", whileMapDragging);
-mapContainer.addEventListener("mouseup", stopMapDrag);
-mapContainer.addEventListener("mouseleave", stopMapDrag);
+mapContainer.addEventListener("mousedown", (e) => startMapDrag(e));
+mapContainer.addEventListener("mousemove", (e) => whileMapDragging(e));
+mapContainer.addEventListener("mouseup", (e) => stopMapDrag(e));
+mapContainer.addEventListener("mouseleave", (e) => stopMapDrag(e));
+container.addEventListener("wheel", handleMapZoom, { passive: false });
 
 const mapImage = document.getElementById("map-image");
 
@@ -55,63 +56,106 @@ const locations = [{
     locationImageURL: "", Feeders: [2], ownerid: 1
 }]
 
+function updateMapTransform() {
+    map.style.transform = `translate(${mapX}px, ${mapY}px) scale(${zoomScale})`;
+}
+
 function startMapDrag(event) {
     isDragging = true
     clickStartTime = Date.now()
 }
 
 function centerMap() {
-    // Math: (Container Size - Map Size) / 2 resulting in a negative offset
-    mapX = (container.clientWidth - map.clientWidth) / 2
-    mapY = (container.clientHeight - map.clientHeight) / 2
-
-    map.style.transform = `translate(${mapX}px, ${mapY}px)`
+    mapX = (container.clientWidth - map.clientWidth) / 2;
+    mapY = (container.clientHeight - map.clientHeight) / 2;
+    updateMapTransform();
 }
+
 
 // Triggered by onmousemove="whileMapDragging(event)"
 function whileMapDragging(event) {
-    if (!isDragging) return
+    if (!isDragging || !container || !map) return;
 
-    if (!container || !map) return // Safety check
+    let targetX = mapX + event.movementX;
+    let targetY = mapY + event.movementY;
 
-    let targetX = mapX + event.movementX
-    let targetY = mapY + event.movementY
+    // Boundary math adjusted for the current zoom factor
+    const minX = container.clientWidth - (map.clientWidth * zoomScale);
+    const minY = container.clientHeight - (map.clientHeight * zoomScale);
 
+    // If the zoomed map is smaller than the container, lock it to top-left
+    const limitX = minX > 0 ? 0 : minX;
+    const limitY = minY > 0 ? 0 : minY;
 
-    const minX = container.clientWidth - map.clientWidth
-    const minY = container.clientHeight - map.clientHeight
+    if (targetX > 0) targetX = 0;
+    if (targetY > 0) targetY = 0;
+    if (targetX < limitX) targetX = limitX;
+    if (targetY < minY) targetY = limitY;
 
-    if (targetX > 0) targetX = 0
-    if (targetY > 0) targetY = 0
-    if (targetX < minX) targetX = minX
-    if (targetY < minY) targetY = minY
-
-    mapX = targetX
-    mapY = targetY
-    map.style.transform = `translate(${mapX}px, ${mapY}px)`
+    mapX = targetX;
+    mapY = targetY;
+    
+    // Call the unified rendering function
+    updateMapTransform();
 }
 
+
 // Triggered by onmouseup and onmouseleave
-function stopMapDrag() {
-    if (!isDragging) return
+function stopMapDrag(event) {
+    if (!isDragging) return;
 
-    isDragging = false
-    const clickDuration = Date.now() - clickStartTime
+    isDragging = false;
+    const clickDuration = Date.now() - clickStartTime;
 
-    // If held for less than 200ms, the user intended to CLICK, not drag!
-    if (clickDuration < 200) {
+    if (clickDuration < 100) {
+        const dynamicRect = container.getBoundingClientRect();
 
-        // Calculate original coordinates relative to the un-scrolled image
-        const mouseXInContainer = event.clientX - rect.left
-        const mouseYInContainer = event.clientY - rect.top
-        const originalX = Math.round(mouseXInContainer - mapX)
-        const originalY = Math.round(mouseYInContainer - mapY)
+        const mouseXInContainer = event.clientX - dynamicRect.left;
+        const mouseYInContainer = event.clientY - dynamicRect.top;
+        
+        // ADJUSTMENT: Divide the container offsets by the zoom scale factor
+        const originalX = Math.round((mouseXInContainer - mapX) / zoomScale);
+        const originalY = Math.round((mouseYInContainer - mapY) / zoomScale);
 
-        // console.log(`Original Map Target -> X: ${originalX}px, Y: ${originalY}px`)
-
-        // You can trigger your popup window here now!
-        toggleModal(originalX, originalY)
+        toggleModal(originalX, originalY);
     }
+}
+
+function handleMapZoom(event) {
+    event.preventDefault();
+
+    const dynamicRect = container.getBoundingClientRect();
+    
+    // 1. Locate the mouse pointer relative to the viewport container
+    const mouseX = event.clientX - dynamicRect.left;
+    const mouseY = event.clientY - dynamicRect.top;
+
+    // 2. Identify the exact pixel point under the cursor before scaling
+    const mapPointX = (mouseX - mapX) / zoomScale;
+    const mapPointY = (mouseY - mapY) / zoomScale;
+
+    // 3. Apply the zoom increment
+    const oldScale = zoomScale;
+    if (event.deltaY < 0) {
+        zoomScale = Math.min(maxZoom, zoomScale + zoomStep);
+    } else {
+        zoomScale = Math.max(minZoom, zoomScale - zoomStep);
+    }
+
+    // 4. Adjust pan offsets so the pixel point remains perfectly fixed under the cursor
+    mapX = mouseX - (mapPointX * zoomScale);
+    mapY = mouseY - (mapPointY * zoomScale);
+
+    // 5. Enforce boundaries instantly after zooming
+    const minX = container.clientWidth - (map.clientWidth * zoomScale);
+    const minY = container.clientHeight - (map.clientHeight * zoomScale);
+    
+    if (mapX > 0) mapX = 0;
+    if (mapY > 0) mapY = 0;
+    if (mapX < minX && minX < 0) mapX = minX;
+    if (mapY < minY && minY < 0) mapY = minY;
+
+    updateMapTransform();
 }
 
 function printMapCoordinates(event) {

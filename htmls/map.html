@@ -21,8 +21,16 @@
     </header>
 
     <div id="map-container" class="map-container">
-        <img id="map-image" class="map" src="../design/images/map.png" ondragstart="return false;">
+        <!-- This wrapper container moves when dragged -->
+        <div id="map-image" class="map">
+            <!-- The actual background image filling the wrapper -->
+            <img class="map-background" src="../design/images/map.png" alt="Sanctuary Map">
+            
+            <!-- Target container where JavaScript will inject your visual location markers -->
+            <div id="markers-layer"></div>
+        </div>
     </div>
+
 
     <div id="modal-overlay" class="modal-overlay">
         <div id="modal-window" class="modal-window">

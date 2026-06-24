@@ -8,7 +8,7 @@
 }
 
 .map-container:active {
-  cursor: grabbing;     /* Changes cursor when holding down */
+  cursor: grabbing;   
 }
 
 .map {
@@ -18,10 +18,20 @@
     user-select: none;
     width: 400%;
     height: 400%;
+    overflow: visible;
+    pointer-events: none;
     
+    transform-origin: top left; 
+}
+.map-background {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     pointer-events: none;
-    overflow: hidden;
+}
+
+.map-background, #markers-layer {
+    pointer-events: none;
 }
 
 .modal-header{
@@ -110,4 +120,17 @@ label .svg:hover{
 .modal-buttons .confirm-button{
     display: flex;
     background-color: var(--green-three);
+}
+
+.pin {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: var(--green-three);
+    border: 2px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%); 
+    cursor: pointer;
+    z-index: 5;
+    pointer-events: auto; 
 }
