@@ -25,7 +25,8 @@ const locations = [
     {
         id: 1, 
         locationName: "Main Sanctuary", 
-        coords: { lat: 51.505, lng: -0.09 }, 
+        lat: 51.505, 
+        lng: -0.09, 
         descriptionName: "Main feeding zone",
         Feeders: [2], 
         ownerid: 1
@@ -152,7 +153,7 @@ function confirmLocation() {
 function renderExistingPins() {
     // Loop through your database records collection to mount existing array structures
     locations.forEach(loc => {
-        const marker = L.marker([loc.coords.lat, loc.coords.lng]).addTo(mapInstance);
+        const marker = L.marker([loc.lat, loc.lng]).addTo(mapInstance);
         marker.bindPopup(`<b>${loc.locationName}</b><br>${loc.descriptionName}`);
     });
 }
