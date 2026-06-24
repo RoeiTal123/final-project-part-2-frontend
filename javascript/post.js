@@ -256,7 +256,7 @@ export async function deletePostFromBackend(postId) {
         console.log("❌ Backend delete failed:", err);
         showToast("delete failed", "main");
         return null;
-    }
+    } 
 }
 
 export async function thePosts() {
