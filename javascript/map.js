@@ -1,203 +1,158 @@
-import { showToast } from "./toast"
+import { showToast } from "./toast";
 
-document.addEventListener("DOMContentLoaded", Main)
+document.addEventListener("DOMContentLoaded", Main);
 
-let isDragging = false
-let startX = 0
-let startY = 0
-let mapX = 0
-let mapY = 0
-let clickStartTime = 0
-let locationX = 0
-let locationY = 0
+// State tracking variables
+let mapInstance; 
+let currentSelectedLat = 0;
+let currentSelectedLng = 0;
+let userId = 4;
 
-let userId = 4 // in this case
+// Quick-click pin placement detection
+const CLICK_TIME_LIMIT = 200;
+let mouseDownTime = null;
+let mouseDownPoint = null;
+let hasMouseMoved = false;
 
-export function getIndexs(){
-    return {x: locationX,y: locationY}
-}
+// Idle-hover pin preview
+const IDLE_READY_DELAY = 200; // ms — how long the mouse must sit still before showing the preview pin
+let idleTimer = null;
+const pinPreview = document.getElementById('pin-preview');
+const mapContainer = document.getElementById('map-container');
 
-const container = document.getElementById('map-container')
-const map = document.getElementById('map-image')
-const rect = container.getBoundingClientRect()
-
-
-const nameElement = document.getElementById("location-name-input")
-const descriptionElement = document.getElementById("location-description-input")
-
-const mapContainer = document.getElementById("map-container");
-
-mapContainer.addEventListener("mousedown", startMapDrag);
-mapContainer.addEventListener("mousemove", whileMapDragging);
-mapContainer.addEventListener("mouseup", stopMapDrag);
-mapContainer.addEventListener("mouseleave", stopMapDrag);
-
-const mapImage = document.getElementById("map-image");
-
-mapImage.addEventListener("dragstart", (e) => {
-    e.preventDefault();
-});
-
-const modalWindow = document.getElementById("modal-window");
-
-modalWindow.addEventListener("click", (e) => {
-    e.stopPropagation();
-});
-
-document.querySelector(".cancel-button")
-    .addEventListener("click", toggleModal);
-
-document.querySelector(".confirm-button")
-    .addEventListener("click", confirmLocation);
-
-const locations = [{ id: 1, location_name: "cat sanctuary", Xindexs: 250, Yindex: 250 , 
-                     description_name: "heaven for cats", location_image_url: "", Feeders: [1, 2], owner_id: 1}]
-
-function startMapDrag(event) {
-    isDragging = true
-    clickStartTime = Date.now()
-}
-
-function centerMap() {
-    // Math: (Container Size - Map Size) / 2 resulting in a negative offset
-    mapX = (container.clientWidth - map.clientWidth) / 2
-    mapY = (container.clientHeight - map.clientHeight) / 2
-
-    map.style.transform = `translate(${mapX}px, ${mapY}px)`
-}
-
-// Triggered by onmousemove="whileMapDragging(event)"
-function whileMapDragging(event) {
-    if (!isDragging) return
-
-    if (!container || !map) return // Safety check
-
-    let targetX = mapX + event.movementX
-    let targetY = mapY + event.movementY
-
-
-    const minX = container.clientWidth - map.clientWidth
-    const minY = container.clientHeight - map.clientHeight
-
-    if (targetX > 0) targetX = 0
-    if (targetY > 0) targetY = 0
-    if (targetX < minX) targetX = minX
-    if (targetY < minY) targetY = minY
-
-    mapX = targetX
-    mapY = targetY
-    map.style.transform = `translate(${mapX}px, ${mapY}px)`
-}
-
-// Triggered by onmouseup and onmouseleave
-function stopMapDrag() {
-    if (!isDragging) return
-
-    isDragging = false
-    const clickDuration = Date.now() - clickStartTime
-
-    // If held for less than 200ms, the user intended to CLICK, not drag!
-    if (clickDuration < 200) {
-
-        // Calculate original coordinates relative to the un-scrolled image
-        const mouseXInContainer = event.clientX - rect.left
-        const mouseYInContainer = event.clientY - rect.top
-        const originalX = Math.round(mouseXInContainer - mapX)
-        const originalY = Math.round(mouseYInContainer - mapY)
-
-        // console.log(`Original Map Target -> X: ${originalX}px, Y: ${originalY}px`)
-
-        // You can trigger your popup window here now!
-        toggleModal(originalX, originalY)
+// Mock database entries (Using Lat / Lng instead of custom grid pixel metrics)
+const locations = [
+    {
+        id: 1, 
+        locationName: "Main Sanctuary", 
+        coords: { lat: 51.505, lng: -0.09 }, 
+        descriptionName: "Main feeding zone",
+        Feeders: [2], 
+        ownerid: 1
     }
-}
+];
 
-function printMapCoordinates(event) {
-
-    // 1. Find where the mouse clicked relative to the container box
-    const mouseXInContainer = event.clientX - rect.left
-    const mouseYInContainer = event.clientY - rect.top
-
-    // 2. Subtract mapX and mapY to find the coordinate on the ORIGINAL image
-    // (Since mapX/Y are negative numbers, subtracting them adds them back)
-    const originalX = Math.round(mouseXInContainer - mapX)
-    const originalY = Math.round(mouseYInContainer - mapY)
-
-    // 3. Print the values to your browser console for future copy-pasting
-    console.log(`Original Map Target -> X: ${originalX}px, Y: ${originalY}px`)
-
-    // OPTIONAL: If you want to use these values right away to open your modal window
-}
-
-function toggleModal(originalX, originalY) {
-    const overlay = document.getElementById('modal-overlay')
-
-    if (overlay.style.display === 'flex') {
-        overlay.style.display = 'none'
-    } else {
-        overlay.style.display = 'flex'
-        setLocation(originalX, originalY)
-    }
-
-    nameElement.value = ""
-    descriptionElement.value = ""
-}
+const nameElement = document.getElementById("location-name-input");
+const descriptionElement = document.getElementById("location-description-input");
 
 function Main() {
-    centerMap()
+    initMap();
+    renderExistingPins();
+
+    // Attach form modal action handlers
+    document.querySelector(".cancel-button").addEventListener("click", () => toggleModal());
+    document.querySelector(".confirm-button").addEventListener("click", confirmLocation);
 }
 
-function setLocation(originalX, originalY) {
-    const modalHeader = document.getElementById("modal-header")
-    modalHeader.innerHTML = `<span>Create new location</span><span class="coords">x: ${originalX} , y: ${originalY}</span>`
-    locationX = originalX
-    locationY = originalY
+function initMap() {
+    mapInstance = L.map('map-container', {
+        minZoom: 2,
+        maxZoom: 18,
+        zoomControl: true
+    }).setView([51.505, -0.09], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
+    }).addTo(mapInstance);
+
+    setTimeout(() => {
+        mapInstance.invalidateSize();
+    }, 100);
+
+    // Record when the press started (for the click-speed check)
+    mapInstance.on('mousedown', () => {
+        mouseDownTime = performance.now();
+        hasMouseMoved = false;
+    });
+
+    // Idle-hover pin preview + movement tracking for the click-speed check
+    mapInstance.on('mousemove', (e) => {
+        hasMouseMoved = true;
+
+        // Any movement hides the preview and restarts the idle countdown
+        pinPreview.style.display = 'none';
+        mapContainer.classList.remove('pin-ready');
+        clearTimeout(idleTimer);
+
+        const { x, y } = e.containerPoint;
+        idleTimer = setTimeout(() => {
+            pinPreview.style.left = `${x}px`;
+            pinPreview.style.top = `${y}px`;
+            pinPreview.style.display = 'block';
+            mapContainer.classList.add('pin-ready');
+        }, IDLE_READY_DELAY);
+    });
+
+    mapInstance.on('mouseout', () => {
+        clearTimeout(idleTimer);
+        pinPreview.style.display = 'none';
+        mapContainer.classList.remove('pin-ready');
+    });
+
+    mapInstance.on('click', handleMapClick);
+}
+
+function handleMapClick(e) {
+    if (mouseDownTime === null) return; // safety guard
+
+    const elapsed = performance.now() - mouseDownTime;
+    const wasFastEnough = elapsed < CLICK_TIME_LIMIT;
+    const wasStillEnough = !hasMouseMoved;
+
+    // Reset state for next interaction
+    mouseDownTime = null;
+    mouseDownPoint = null;
+    hasMouseMoved = false;
+
+    if (!wasFastEnough || !wasStillEnough) {
+        return; // too slow or moved — don't place a pin
+    }
+
+    currentSelectedLat = e.latlng.lat;
+    currentSelectedLng = e.latlng.lng;
+
+    toggleModal(currentSelectedLat, currentSelectedLng);
+}
+function toggleModal(lat, lng) {
+    const overlay = document.getElementById('modal-overlay');
+
+    if (overlay.style.display === 'flex') {
+        overlay.style.display = 'none';
+    } else {
+        overlay.style.display = 'flex';
+        
+        // Update form layout modal header coordinates view
+        const modalHeader = document.getElementById("modal-header");
+        modalHeader.innerHTML = `<span>Create new location</span><span class="coords">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</span>`;
+    }
+
+    nameElement.value = "";
+    descriptionElement.value = "";
 }
 
 function confirmLocation() {
-    const overlay = document.getElementById('modal-overlay')
+    const name = nameElement.value.trim();
+    const description = descriptionElement.value.trim();
 
-
-    if (overlay.style.display === 'flex') {
-        overlay.style.display = 'none'
-    } else {
-        overlay.style.display = 'flex'
+    if (!name) {
+        showToast("Please enter a location name.");
+        return;
     }
-    console.log("location added")
+
+    // Program step logic: Save coordinates directly onto our map instance layer array view
+    const newLocationMarker = L.marker([currentSelectedLat, currentSelectedLng]).addTo(mapInstance);
+    
+    // Bind an integrated popup bubble overlay info context directly onto the pin marker node
+    newLocationMarker.bindPopup(`<b>${name}</b><br>${description}`).openPopup();
+
+    toggleModal();
+    console.log("New tracking location data successfully rendered onto system layout maps:", currentSelectedLat, currentSelectedLng);
 }
 
-function renderNewLocationFeederList() {
-
-}
-
-function renderFeeders(locationId = "1") { // function that renders feeders of the location
-    // console.log(list)
-    console.log("feeders rendered")
-    const location = locations.find(locationInList => locationInList._id === locationId)
-    const feederids = [...location.Feeders]
-    const feedersContainer = document.getElementById("feeders-list") // creates a 'pointer' to the container so we could interract with it
-    if (feeders != null) {
-
-        feedersContainer.innerHTML = feederids.map(feederId => {
-
-            const feeder = users.find(user => user._id === feederId)
-            if (!feeder) return ''
-
-            return `
-            <div class="feeder-box">
-            
-                <div class="feeder-left-group">
-                    <a href="../htmls/profile.html?id=${feederId}" class="feeder-user">
-                       <img src="${feeder.profilePicURL || 'default-avatar.png'}" alt="${feeder.fullname}'s avatar" />
-                    </a> 
-                    <div class="feeder-user-name">${feeder.fullname}</div>
-                </div>
-
-                <div class="feeder-role">
-                    ${(feeder._id === location._ownerid) ? 'owner' : 'feeder'}
-                </div>
-            </div>
-            `;
-        }).join('')
-    }
+function renderExistingPins() {
+    // Loop through your database records collection to mount existing array structures
+    locations.forEach(loc => {
+        const marker = L.marker([loc.coords.lat, loc.coords.lng]).addTo(mapInstance);
+        marker.bindPopup(`<b>${loc.locationName}</b><br>${loc.descriptionName}`);
+    });
 }

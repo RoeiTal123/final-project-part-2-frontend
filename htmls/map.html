@@ -3,7 +3,11 @@
 
 <head>
     <title>Cat Sanctuary</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="../design/pages/map.css">
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script type="module" src="../javascript/map.js" defer></script>
 </head>
 
@@ -21,13 +25,13 @@
     </header>
 
     <div id="map-container" class="map-container">
-        <img id="map-image" class="map" src="../design/images/map.png" ondragstart="return false;">
+        <div id="pin-preview" class="pin-preview"></div>
     </div>
 
     <div id="modal-overlay" class="modal-overlay">
         <div id="modal-window" class="modal-window">
             <div class="modal-header" id="modal-header">
-                <!-- <span>Create new location</span> -->
+                <!-- Spans are injected dynamically by JavaScript here -->
             </div>
             <div><span>Location name: </span><input type="text" placeholder="location name" name="locationName" id="location-name-input"/></div>
             <div class="modal-grid">
@@ -36,27 +40,16 @@
                 <input class="file-input-button" type="file" id="file-input"/>
                 <label for="file-input">
                     <svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" fill="var(--black)">
-
                     <g id="SVGRepo_bgCarrier" stroke-width="0"/>
-
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-
                     <g id="SVGRepo_iconCarrier">
-
                     <defs>
-
                     <style>.cls-1{fill:none;stroke:var(--gray-three);stroke-miterlimit:10;stroke-width:1.91px;}</style>
-
                     </defs>
-
                     <rect class="cls-1" x="1.5" y="1.5" width="21" height="21"/>
-
                     <polyline class="cls-1" points="1.5 19.64 8.18 12.96 13.91 18.68 17.73 14.86 22.5 19.64"/>
-
                     <circle class="cls-1" cx="13.91" cy="8.18" r="1.91"/>
-
                     </g>
-
                     </svg>
                 </label>
                 </div>
@@ -74,7 +67,7 @@
     </div>
 
     <footer class="header-mobile">
-        <a a href="../htmls/main.html" class="button-box">
+        <a href="../htmls/main.html" class="button-box">
             <svg xmlns="http://www.w3.org/2000/svg" width="64px" height="64px" viewBox="0 0 24 24" fill="none">
                 <path fill-rule="evenodd" clip-rule="evenodd"
                     d="M12.6139 1.21065C12.2528 0.929784 11.7472 0.929784 11.3861 1.21065L2.38606 8.21065C2.14247 8.4001 2 8.69141 2 9V20C2 21.1046 2.89543 22 4 22H20C21.1046 22 22 21.1046 22 20V9C22 8.69141 21.8575 8.4001 21.6139 8.21065L12.6139 1.21065ZM16 20H20V9.48908L12 3.26686L4 9.48908V20H8V12C8 11.4477 8.44772 11 9 11H15C15.5523 11 16 11.4477 16 12V20ZM10 20V13H14V20H10Z"

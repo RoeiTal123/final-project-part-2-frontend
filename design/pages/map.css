@@ -1,37 +1,42 @@
 @import "../general/general.css";
 
-.map-container{
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.map-container {
     flex-grow: 1;
     width: 100%;
-    overflow: hidden;
-    cursor: grab;
+    height: calc(100vh - 80px);
+    position: relative;
+    z-index: 1;
 }
 
 .map-container:active {
-  cursor: grabbing;     /* Changes cursor when holding down */
+    cursor: grabbing;
 }
 
-.map {
-    position: absolute;
-    top: 0;
-    left: 0;
-    user-select: none;
-    width: 400%;
-    height: 400%;
-    
-    object-fit: cover;
-    pointer-events: none;
-    overflow: hidden;
+.map-container.pin-ready {
+    cursor: pointer;
 }
 
-.modal-header{
+.modal-header {
     display: flex;
     flex-direction: row;
     width: 100%;
     justify-content: space-between;
 }
 
-.modal-grid{
+.modal-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 220px 220px;
@@ -40,14 +45,14 @@
     height: 480px;
 }
 
-.location-description{
+.location-description {
     grid-row: span 2;
     height: 100%;
     background-color: var(--gray-one);
     border: 0;
 }
 
-.file-input{
+.file-input {
     grid-column: 2;
     grid-row: 1;
     display: flex;
@@ -56,7 +61,7 @@
     background-color: var(--gray-two);
 }
 
-.file-input-button{
+.file-input-button {
     opacity: 0;
     position: absolute;
     z-index: -1;
@@ -66,21 +71,21 @@
     pointer-events: none;
 }
 
-.modal-grid label{
+.modal-grid label {
     display: flex;
     justify-content: center;
 }
 
-label .svg{
+label .svg {
     width: 40%;
     height: auto;
 }
 
-label .svg:hover{
+label .svg:hover {
     cursor: pointer;
 }
 
-.feeder-list-box{
+.feeder-list-box {
     grid-column: 2;
     grid-row: 2;
     display: flex;
@@ -90,24 +95,39 @@ label .svg:hover{
     background-color: var(--gray-one);
 }
 
-.feeder-list-box .feeder-list{
+.feeder-list-box .feeder-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.modal-buttons{
+.modal-buttons {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
 }
 
-.modal-buttons .cancel-button{
+.modal-buttons .cancel-button {
     display: flex;
     background-color: var(--red-one);
 }
 
-.modal-buttons .confirm-button{
+.modal-buttons .confirm-button {
     display: flex;
     background-color: var(--green-three);
+}
+
+.pin-preview {
+    display: none;
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: var(--blue-two);
+    border: 2px solid white;
+    border-radius: 50% 50% 50% 0;
+    transform: translate(25px, -100%) rotate(-45deg);
+    transform-origin: bottom left;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
