@@ -2,10 +2,23 @@ import { showToast } from "./toast";
 
 document.addEventListener("DOMContentLoaded", Main);
 
+// State tracking variables
 let mapInstance; 
 let currentSelectedLat = 0;
 let currentSelectedLng = 0;
 let userId = 4;
+
+// Quick-click pin placement detection
+const CLICK_TIME_LIMIT = 200;
+let mouseDownTime = null;
+let mouseDownPoint = null;
+let hasMouseMoved = false;
+
+// Idle-hover pin preview
+const IDLE_READY_DELAY = 200; // ms — how long the mouse must sit still before showing the preview pin
+let idleTimer = null;
+const pinPreview = document.getElementById('pin-preview');
+const mapContainer = document.getElementById('map-container');
 
 // Mock database entries (Using Lat / Lng instead of custom grid pixel metrics)
 const locations = [
@@ -32,34 +45,74 @@ function Main() {
 }
 
 function initMap() {
-    // Instantiate the main engine system
     mapInstance = L.map('map-container', {
         minZoom: 2,
         maxZoom: 18,
         zoomControl: true
-    }).setView([51.505, -0.09], 14); // Set the initial center coordinate focus point
+    }).setView([51.505, -0.09], 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
     }).addTo(mapInstance);
 
-    // REFLOW TRICK: Tells the map engine to recalculate container space right after the layout structures paint
     setTimeout(() => {
         mapInstance.invalidateSize();
     }, 100);
 
-    // Hook into Leaflet's contextual click capture event pipeline
+    // Record when the press started (for the click-speed check)
+    mapInstance.on('mousedown', () => {
+        mouseDownTime = performance.now();
+        hasMouseMoved = false;
+    });
+
+    // Idle-hover pin preview + movement tracking for the click-speed check
+    mapInstance.on('mousemove', (e) => {
+        hasMouseMoved = true;
+
+        // Any movement hides the preview and restarts the idle countdown
+        pinPreview.style.display = 'none';
+        mapContainer.classList.remove('pin-ready');
+        clearTimeout(idleTimer);
+
+        const { x, y } = e.containerPoint;
+        idleTimer = setTimeout(() => {
+            pinPreview.style.left = `${x}px`;
+            pinPreview.style.top = `${y}px`;
+            pinPreview.style.display = 'block';
+            mapContainer.classList.add('pin-ready');
+        }, IDLE_READY_DELAY);
+    });
+
+    mapInstance.on('mouseout', () => {
+        clearTimeout(idleTimer);
+        pinPreview.style.display = 'none';
+        mapContainer.classList.remove('pin-ready');
+    });
+
     mapInstance.on('click', handleMapClick);
 }
 
 function handleMapClick(e) {
-    // Leaflet isolates context automatically: this only runs if the user didn't drag!
+    if (mouseDownTime === null) return; // safety guard
+
+    const elapsed = performance.now() - mouseDownTime;
+    const wasFastEnough = elapsed < CLICK_TIME_LIMIT;
+    const wasStillEnough = !hasMouseMoved;
+
+    // Reset state for next interaction
+    mouseDownTime = null;
+    mouseDownPoint = null;
+    hasMouseMoved = false;
+
+    if (!wasFastEnough || !wasStillEnough) {
+        return; // too slow or moved — don't place a pin
+    }
+
     currentSelectedLat = e.latlng.lat;
     currentSelectedLng = e.latlng.lng;
 
     toggleModal(currentSelectedLat, currentSelectedLng);
 }
-
 function toggleModal(lat, lng) {
     const overlay = document.getElementById('modal-overlay');
 
