@@ -109,18 +109,34 @@ textarea{
     filter: drop-shadow(0px 8px 12px rgba(0, 0, 0, 0.4));
 }
 
+.left-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1px;
+}
+
+
+.header-title {
+    margin: 0;
+    font-size: 2rem;
+    font-family: var(--main-font); 
+    color: var(--brown-one);      
+}
+
 .logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 4em;
-    width: 4em;
+    height: 8em;
+    width: 8em;  
     border-radius: 50%;
-    background: linear-gradient(to bottom, var(--blue-one) 0%, var(--blue-three) 100%);
 }
 
 .logo-img {
-    height: 50px;
+    height: 80%;
+    width: 80%;
+    object-fit: contain; /* Prevents image distortion */
 }
 
 .on-right {
@@ -139,15 +155,15 @@ textarea{
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 64px;
-    width: 64px;
+    height: 64px;         
+    width: 64px;     
     border: 0;
-    background: linear-gradient(to bottom, var(--green-one) 0%, var(--green-two) 100%);
-
+    align-self: center; 
 }
 
 .map-logo {
-    height: 50px;
+    height: 150px; 
+    width: auto;
 }
 
 .logo,
