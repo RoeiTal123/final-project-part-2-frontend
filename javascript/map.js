@@ -51,10 +51,8 @@ document.querySelector(".cancel-button")
 document.querySelector(".confirm-button")
     .addEventListener("click", confirmLocation);
 
-const locations = [{
-    id: 1, locationName: "", indexs: { x: 1, y: 1 }, descriptionName: "",
-    locationImageURL: "", Feeders: [2], ownerid: 1
-}]
+const locations = [{ id: 1, location_name: "cat sanctuary", Xindexs: 250, Yindex: 250 , 
+                     description_name: "heaven for cats", location_image_url: "", Feeders: [1, 2], owner_id: 1}]
 
 function updateMapTransform() {
     map.style.transform = `translate(${mapX}px, ${mapY}px) scale(${zoomScale})`;

@@ -65,3 +65,11 @@ export async function uploadToCloudinary(file) {
     publicId: data.public_id
   };
 }
+
+export function updateProfilePicture(loggedInUser) {
+    const profileImg = document.querySelector(".profile-logo")
+
+    if (!profileImg || !loggedInUser) return
+
+    profileImg.src = loggedInUser.profile_pic_url
+}
