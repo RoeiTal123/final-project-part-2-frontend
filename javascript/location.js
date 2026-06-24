@@ -1,12 +1,15 @@
 import { showToast } from './toast.js'
-import { generateId } from './helper.js'
+import { generateId, uploadToCloudinary } from './helper.js'
 import { saveArrayToStorage, getArrayFromStorage } from '../javascript/helper.js'
 import { httpService } from "./communication.js";
-import { getIndexs } from './map.js';
+import { currentSelectedLat, currentSelectedLng } from './map.js';
+import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
+import { renderExistingPins } from './map.js'
+import { getLoggedInUser } from './user.js';
 
 let userId = "4"
 
-let locations = []
+export let locations = []
 
 const nameElement = document.getElementById("location-name-input")
 const descriptionElement = document.getElementById("location-description-input")
@@ -14,7 +17,8 @@ const descriptionElement = document.getElementById("location-description-input")
 export async function queryFromBackend(value = "") {
     try {
         const res = await httpService.get(
-            "locations"
+            "locations",
+            { user_id: value }
         );
 
         console.log("🔥 BACKEND LOCATIONS:", res);
@@ -43,32 +47,54 @@ export async function locationByIdFromBackend(locationId) {
 }
 
 export async function createLocationAndPutInBackend() {
+    const nameEl = document.getElementById("location-name-input")
+    const descEl = document.getElementById("location-description-input")
 
-    const locationName = nameElement.value.trim()
-    const locationDescription = descriptionElement.value.trim()
-    const indexs = getIndexs()
+    const name = nameEl.value.trim()
+    const desc = descEl.value.trim()
 
-    if (locationName === "") {
-        showToast("invalid name", "map")
-        return
+    const loggedUser = getLoggedInUser()
+
+    if (!name) {
+        showToast("missing name", "map");
+        return;
     }
 
-    if (locationDescription === "") {
-        showToast("invalid description", "map")
-        return
+    if (!desc) {
+        showToast("missing description", "map");
+        return;
     }
 
-    if (x === NaN || y === NaN) {
-        showToast("invalid coardinats", "map")
-        return
+    let mediaUrl = null;
+    let mediaType = null;
+
+    if (selectedMediaFile) {
+        try {
+            const upload = await uploadToCloudinary(selectedMediaFile);
+
+            mediaUrl = upload.url;
+            mediaType = selectedMediaType;
+
+        } catch (err) {
+            console.log("upload failed:", err);
+            showToast("media upload failed, posting without media", "map");
+
+            // 🚨 DO NOTHING ELSE
+            mediaUrl = null;
+            mediaType = null;
+        }
     }
-
-
 
     const newLocation = {
-        id: generateId(), name: locationName, indexs: { x: x, y: y },
-        description: locationDescription, locationImageURL: "",
-        Feeders: [], ownerid: userId, createdAt: Date.now()
+        location_name: name,
+        lat: currentSelectedLat,
+        lng: currentSelectedLng,
+        description: desc,
+        media_type: mediaType,
+        location_media_url: mediaUrl,
+        owner_id: Number(loggedUser.id),
+        feeders: [Number(loggedUser.id)],
+        created_at: Date.now()
     };
 
     try {
@@ -79,24 +105,25 @@ export async function createLocationAndPutInBackend() {
 
         console.log("🔥 CREATED LOCATION:", createdLocation);
         locations.push(newLocation)
-        showToast(`created location [${newLocation.id}]`, "main");
+        renderExistingPins(locations)
+        showToast(`created location`, "map");
 
-        nameElement.value = ""
-        descriptionElement.value = ""
+        nameEl.value = "";
+        descEl.value = "";
+        clearSelectedMedia();
 
         return createdLocation;
     }
     catch (err) {
         console.log("❌ Backend create failed:", err);
         return null;
-    }
+    } 
 }
 
 export async function editLocationAndPutInBackend(locationId) {
 
     const locationName = nameElement.value.trim()
     const locationDescription = descriptionElement.value.trim()
-    const indexs = getIndexs()
 
     if (locationName === "") {
         showToast("invalid name", "map")
@@ -108,12 +135,7 @@ export async function editLocationAndPutInBackend(locationId) {
         return
     }
 
-    if (x === NaN || y === NaN) {
-        showToast("invalid coardinats", "map")
-        return
-    }
-
-    const originalIndex = locations.findIndex(p => p.id === locationId);
+    const originalIndex = locations.findIndex(l => l.id === locationId);
     if (originalIndex === -1) return null;
 
     const originalLocation = locations[originalIndex];
@@ -123,7 +145,7 @@ export async function editLocationAndPutInBackend(locationId) {
         originalLocation.name === locationName &&
         originalLocation.description === locationDescription
     ) {
-        showToast("nothing changed, not saving", "main");
+        showToast("nothing changed, not saving", "map");
         return null;
     }
 
@@ -138,19 +160,15 @@ export async function editLocationAndPutInBackend(locationId) {
     locations[originalIndex] = {...updatedLocation};
     renderLocations(locations);
 
-    showToast(`updated location [${locationId}]`, "main");
-
-    // reset UI
-    titleEl.value = "";
-    descEl.value = "";
+    showToast(`updated location [${locationId}]`, "map");
 
     try {
         await httpService.put(`locations/${locationId}`, updatedLocation);
 
-        showToast(`updated location [${locationId}]`, "main");
+        showToast(`updated location [${locationId}]`, "map");
 
-        titleEl.value = "";
-        descEl.value = "";
+        nameElement.value = "";
+        descriptionElement.value = "";
 
         return updatedLocation;
     }
@@ -161,40 +179,41 @@ export async function editLocationAndPutInBackend(locationId) {
         locations[originalIndex] = originalLocation;
         renderLocations(locations);
 
-        showToast("update failed", "main");
+        showToast("update failed", "mamapin");
         return null;
     }
 }
 
 export async function deleteLocationFromBackend(locationId) {
-    const userid = Number(userId)
+    const locationid = Number(locationId)
+    const loggedUser = getLoggedInUser();
+
     if (!locationId) {
-        showToast("invalid location", "main");
+        showToast("invalid location", "map");
         return;
     }
 
-    const location = locations.find(p => {
-        return p.id === locationId
+    const location = locations.find(l => {
+        return l.id === locationId
     });
 
     if (!location) {
-        showToast("location not found", "main");
+        showToast("location not found", "map");
         return;
     }
 
-    if (location.user_id !== userid) {
-        showToast("not allowed", "main");
+    if (location.owner_id !== loggedUser.id) {
+        showToast("not allowed", "map");
         return;
     }
-
 
     try {
         const res = await httpService.delete(`locations/${locationId}`)
 
-        locations = locations.filter(p => p.id !== locationId);
+        locations = locations.filter(l => l.id !== locationId);
         renderLocations(locations)
         console.log("🔥 DELETED LOCATION:", res.data)
-        showToast(`deleted location [${locationId}]`, "main");
+        showToast(`deleted location [${locationId}]`, "map");
 
         return res.data
     }
