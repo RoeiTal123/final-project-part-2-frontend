@@ -227,17 +227,26 @@ function handleMapClick(e) {
 
     toggleModal(currentSelectedLat, currentSelectedLng);
 }
+
 function toggleModal(lat, lng) {
     const overlay = document.getElementById('modal-overlay');
 
-    if (overlay.style.display === 'flex') {
-        overlay.style.display = 'none';
+    if (overlay.classList.contains('is-open')) {
+        // Closing: animate out, then hide after the transition finishes
+        overlay.classList.remove('is-open');
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 200); // matches the 0.2s transition duration
     } else {
+        // Opening: show first, then add the class on the next frame so the transition triggers
         overlay.style.display = 'flex';
-        
-        // Update form layout modal header coordinates view
+
         const modalHeader = document.getElementById("modal-header");
         modalHeader.innerHTML = `<span>Create new location</span><span class="coords">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</span>`;
+
+        requestAnimationFrame(() => {
+            overlay.classList.add('is-open');
+        });
     }
 
     nameElement.value = "";
