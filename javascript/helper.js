@@ -1,3 +1,4 @@
+import { getLoggedInUser } from "./user"
 
 
 export function saveArrayToStorage(key, array) {
@@ -66,8 +67,9 @@ export async function uploadToCloudinary(file) {
   };
 }
 
-export function updateProfilePicture(loggedInUser) {
+export function updateProfilePicture() {
     const profileImg = document.querySelector(".profile-logo")
+    const loggedInUser = getLoggedInUser();
 
     if (!profileImg || !loggedInUser) return
 

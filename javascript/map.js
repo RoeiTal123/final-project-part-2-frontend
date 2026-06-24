@@ -271,6 +271,6 @@ export function renderExistingPins() {
     // Loop through your database records collection to mount existing array structures
     locations.forEach(loc => {
         const marker = L.marker([loc.lat, loc.lng]).addTo(mapInstance);
-        marker.bindPopup(`<b>${loc.location_ame}</b><br>${loc.description}`);
+        marker.bindPopup(`<b>${loc.location_name}</b><br>${loc.description}`);
     });
 }
