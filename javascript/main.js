@@ -1,4 +1,4 @@
-import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp } from '../javascript/helper.js'
+import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture } from '../javascript/helper.js'
 import { showToast, hideToast } from './toast.js'
 import { setSelectedMedia } from "./media-state.js";
 import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from './post.js'
@@ -61,6 +61,25 @@ document.addEventListener("click", async (e) => {
 
         document.getElementById("post-title-input").value = post.title;
         document.getElementById("post-description-input").value = post.description;
+
+        mediaBox.innerHTML = "";
+
+        if (!post.media_url) return;
+
+        if (post.media_type === "image") {
+            const img = document.createElement("img");
+            img.src = post.media_url;
+            img.classList.add("input-media-image");
+            mediaBox.appendChild(img);
+        }
+
+        if (post.media_type === "video") {
+            const video = document.createElement("video");
+            video.src = post.media_url;
+            video.controls = true;
+            video.classList.add("input-media-video");
+            mediaBox.appendChild(video);
+        }
 
         const createBtn = document.querySelector(".create-post-btn");
 
@@ -182,6 +201,7 @@ input.addEventListener("change", (e) => {
 
 function Main() {
     updateMainContent()
+    updateProfilePicture()
     //renderCommunities()
 }
 
@@ -190,7 +210,7 @@ export async function renderPosts(list) { // function that renders updates posts
     console.log("posts rendered")
     const postsContainer = document.getElementById("posts-container") // creates a 'pointer' to the container so we could interract with it
     if (list != null) {
-        
+
         const loggedUser = getLoggedInUser()
         const users = await queryUsersFromBackend()
         postsContainer.innerHTML = list.map(post => {
@@ -221,14 +241,14 @@ export async function renderPosts(list) { // function that renders updates posts
                        </div>
                        <div class="post-description">${post.description}</div>
                        ${post.media_url
-                            ? `<div class="post-media">
+                    ? `<div class="post-media">
                             ${post.media_type === "video"
-                            ? `<video class="post-video" controls src="${post.media_url}"></video>`
-                            : `<img class="post-image" src="${post.media_url}" />`
-                            }
+                        ? `<video class="post-video" controls src="${post.media_url}"></video>`
+                        : `<img class="post-image" src="${post.media_url}" />`
+                    }
                             </div>`
-                            : ""
-                        }
+                    : ""
+                }
                 <div class="post-footer">
                  <div class="like-container-wrapper" style="position: relative; display: inline-block;">
                   <div class="like-btn ${liked ? 'is-liked' : ''}" data-id="${post.id}">
@@ -279,7 +299,7 @@ function isLiked(postId, userId = userId) { // checks if post with id = postId i
 
 function likePost(postId, userId) {
     console.log("like")
-    
+
     const loggedUser = getLoggedInUser()
     if (!postId) return;
 
@@ -304,7 +324,7 @@ function handleSortChange(selectedSort) {
 async function updateMainContent() {
     const urlParams = new URLSearchParams(window.location.search);
     const currentSort = urlParams.get("sort") || "new";
-    
+
     const loggedUser = getLoggedInUser()
 
     const sortRadio = document.getElementById(currentSort);

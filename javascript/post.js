@@ -148,33 +148,45 @@ export async function editPostAndPutInBackend(postId) {
 
     const originalPost = posts[originalIndex];
 
+    const mediaChanged = selectedMediaFile !== null;
+
     // nothing changed check
     if (
         originalPost.title === title &&
-        originalPost.description === desc
+        originalPost.description === desc &&
+        !mediaChanged
     ) {
         showToast("nothing changed, not saving", "main");
         return null;
     }
 
+    let mediaUrl = originalPost.media_url
+    let mediaType = originalPost.media_type
+
     // copy + overwrite
-    const updatedPost = {
-        ...originalPost,
-        title: title,
-        description: desc
-    };
-
-    // optimistic UI update
-    posts[originalIndex] = { ...updatedPost };
-    renderPosts(posts);
-
-    showToast(`updated post [${postId}]`, "main");
-
-    // reset UI
-    titleEl.value = "";
-    descEl.value = "";
-
     try {
+        if (mediaChanged) {
+            const uploadResult = await uploadToCloudinary(
+                selectedMediaFile,
+                selectedMediaType
+            );
+
+            mediaUrl = uploadResult.url;
+            mediaType = selectedMediaType;
+        }
+
+        const updatedPost = {
+            ...originalPost,
+            title,
+            description: desc,
+            media_url: mediaUrl,
+            media_type: mediaType
+        };
+
+        // optimistic update
+        posts[originalIndex] = { ...updatedPost };
+        renderPosts(posts);
+
         await httpService.put(`posts/${postId}`, updatedPost);
 
         showToast(`updated post [${postId}]`, "main");
@@ -182,16 +194,18 @@ export async function editPostAndPutInBackend(postId) {
         titleEl.value = "";
         descEl.value = "";
 
+        clearSelectedMedia();
+
         return updatedPost;
     }
     catch (err) {
-        console.log("❌ Backend update failed:", err);
+        console.error("❌ Backend update failed:", err);
 
-        // rollback
         posts[originalIndex] = originalPost;
         renderPosts(posts);
 
         showToast("update failed", "main");
+
         return null;
     }
 }
