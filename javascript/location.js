@@ -1,6 +1,6 @@
 import { showToast } from "./toast.js"
 import { generateId, uploadToCloudinary } from "./helper.js"
-import { saveArrayToStorage, getArrayFromStorage } from "../javascript/helper.js"
+import { saveArrayToStorage, getArrayFromStorage } from "./helper.js"
 import { httpService } from "./communication.js";
 import { currentSelectedLat, currentSelectedLng } from "./map.js";
 import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
@@ -151,7 +151,7 @@ export async function editLocationAndPutInBackend(locationId) {
         selectedMediaFile === null &&
         selectedMediaType === "none" &&
         mediaWasOriginallyPresent;
-        
+
     const mediaChanged = mediaRemoved || mediaReplaced;
 
 

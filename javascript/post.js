@@ -1,6 +1,6 @@
 import { showToast } from "./toast.js"
 import { generateId } from "./helper.js"
-import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from "../javascript/helper.js"
+import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from "./helper.js"
 import { httpService } from "./communication.js";
 import { renderPosts } from "./main.js";
 import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
