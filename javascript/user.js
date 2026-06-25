@@ -4,7 +4,8 @@ import { showToast } from './toast.js';
 const BASE_URL =
     window.location.hostname === 'localhost'
         ? 'http://localhost:3000/api/'
-        : import.meta.env.VITE_API_URL;
+        : 'https://final-project-part-2-backend.onrender.com/api/';
+
 
 export let users = []
 
