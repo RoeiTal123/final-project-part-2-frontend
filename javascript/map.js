@@ -1,12 +1,12 @@
 import { updateProfilePicture } from "./helper";
-import { createLocationAndPutInBackend, deleteLocationFromBackend, locationByIdFromBackend, locationsOfUser, queryFromBackend } from "./location";
+import { createLocationAndPutInBackend, deleteLocationFromBackend, editLocationAndPutInBackend, locationByIdFromBackend, locationsOfUser, queryFromBackend } from "./location";
 import { showToast } from "./toast";
 import { getLoggedInUser } from "./user";
 
 document.addEventListener("DOMContentLoaded", Main);
 
 // State tracking variables
-let mapInstance; 
+let mapInstance;
 export let currentSelectedLat = 0;
 export let currentSelectedLng = 0;
 let userId = 4;
@@ -161,6 +161,8 @@ function initMap() {
         zoomControl: true
     }).setView([51.505, -0.09], 14);
 
+    mapInstance.doubleClickZoom.disable();
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
     }).addTo(mapInstance);
@@ -202,7 +204,7 @@ function initMap() {
     mapInstance.on('click', handleMapClick);
 }
 
-async function retrieveLocations(){
+async function retrieveLocations() {
     const loggedInUser = getLoggedInUser();
     const user_id = loggedInUser.id;
     const locations = await queryFromBackend(user_id);
@@ -230,7 +232,7 @@ function handleMapClick(e) {
     toggleModal(currentSelectedLat, currentSelectedLng);
 }
 
-function toggleModal(lat, lng) {
+function toggleModal(lat, lng, location = null) {
     const overlay = document.getElementById('modal-overlay');
 
     if (overlay.classList.contains('is-open')) {
@@ -244,35 +246,119 @@ function toggleModal(lat, lng) {
         overlay.style.display = 'flex';
 
         const modalHeader = document.getElementById("modal-header");
-        modalHeader.innerHTML = `<span>Create new location</span><span class="coords">Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}</span>`;
+        modalHeader.innerHTML = `<span>Create new location</span><span class="coords">Lat: ${location ? location.lat.toFixed(4) : lat.toFixed(4)}, Lng: ${location ? location.lat.toFixed(4) : lng.toFixed(4)}</span>`;
 
         requestAnimationFrame(() => {
             overlay.classList.add('is-open');
         });
     }
 
-    nameElement.value = "";
-    descriptionElement.value = "";
+    if (location) {
+        console.log(location)
+        nameElement.value = location.location_name;
+        descriptionElement.value = location.description;
+    } else {
+
+        nameElement.value = "";
+        descriptionElement.value = "";
+    }
+
 }
 
-function confirmLocation() {
-    const newLocation = createLocationAndPutInBackend();
-    if(!newLocation){
-        toggleModal();
-        // Program step logic: Save coordinates directly onto our map instance layer array view
-        const newLocationMarker = L.marker([currentSelectedLat, currentSelectedLng]).addTo(mapInstance);
-        
-        // Bind an integrated popup bubble overlay info context directly onto the pin marker node
-        newLocationMarker.bindPopup(`<b>${newLocation.location_name}</b><br>${newLocation.description}`).openPopup();
+async function confirmLocation() {
 
-        console.log("New tracking location data successfully rendered onto system layout maps:", currentSelectedLat, currentSelectedLng);
+
+    // =========================
+    // EDIT EXISTING LOCATION
+    // =========================
+    if (currentEditingLocationId) {
+        const realId = currentEditingLocationId.replace("marker-", "");
+        const updatedLocation = await editLocationAndPutInBackend(Number(realId))
+        console.log(updatedLocation)
+        const marker = markerMap.get(currentEditingLocationId);
+
+        if (!marker) return;
+
+        // update position
+        marker.setLatLng([currentSelectedLat, currentSelectedLng]);
+
+        // update popup
+        marker.setPopupContent(
+            `<b>${updatedLocation.location_name}</b><br>${updatedLocation.description}`
+        );
+
+        // update stored data
+        marker.loc = updatedLocation;
+
+        console.log("Edited marker:", currentEditingLocationId);
+
+        currentEditingLocationId = null; // reset edit mode
+        toggleModal()
+        return;
+    }  else {
+
+        const newLocation = await createLocationAndPutInBackend();
+        
+            // =========================
+            // CREATE NEW LOCATION
+            // =========================
+            const newLocationMarker = L.marker([currentSelectedLat, currentSelectedLng]).addTo(mapInstance);
+        
+            newLocationMarker.bindPopup(
+                `<b>${newLocation.location_name}</b><br>${newLocation.description}`
+            ).openPopup();
+        
+            newLocationMarker.id = `marker-${newLocation.id}`;
+            newLocationMarker.loc = newLocation;
+        
+            markerMap.set(newLocationMarker.id, newLocationMarker);
+        
+            console.log("Created new marker:", newLocation.id);
+            toggleModal()
     }
+}
+
+let markerClickEnabled = true;
+let currentEditingLocationId;
+
+export function setMarkerClickEnabled(state) {
+    markerClickEnabled = state;
+}
+
+const markerMap = new Map();
+
+export function clearExistingPins() {
+    markerMap.forEach(marker => {
+        mapInstance.removeLayer(marker);
+    });
+
+    markerMap.clear();
 }
 
 export function renderExistingPins() {
     // Loop through your database records collection to mount existing array structures
+    clearExistingPins();
+
+    markerMap.clear();
+    console.log(locationsOfUser)
+
     locationsOfUser.forEach(loc => {
         const marker = L.marker([loc.lat, loc.lng]).addTo(mapInstance);
         marker.bindPopup(`<b>${loc.location_name}</b><br>${loc.description}`);
+        const markerId = `marker-${loc.id}`;
+        marker.id = markerId
+        marker.loc = { ...loc };
+        markerMap.set(markerId, marker);
+
+        marker.on("dblclick", (e) => {
+            if (!markerClickEnabled) return;
+
+            currentEditingLocationId = markerId;
+            toggleModal(loc.lat, loc.lng, loc);
+        });
     });
+}
+
+function getMarkerById(id) {
+    return markerMap.get(id);
 }

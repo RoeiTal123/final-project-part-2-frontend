@@ -117,7 +117,7 @@ export async function createLocationAndPutInBackend() {
     catch (err) {
         console.log("❌ Backend create failed:", err);
         return null;
-    } 
+    }
 }
 
 export async function editLocationAndPutInBackend(locationId) {
@@ -135,10 +135,12 @@ export async function editLocationAndPutInBackend(locationId) {
         return
     }
 
-    const originalIndex = locations.findIndex(l => l.id === locationId);
+    console.log(locationsOfUser)
+    console.log(locationId)
+    const originalIndex = locationsOfUser.findIndex(l => l.id === locationId);
     if (originalIndex === -1) return null;
 
-    const originalLocation = locations[originalIndex];
+    const originalLocation = locationsOfUser[originalIndex];
 
     // nothing changed check
     if (
@@ -152,15 +154,12 @@ export async function editLocationAndPutInBackend(locationId) {
     // copy + overwrite
     const updatedLocation = {
         ...originalLocation,
-        name: locationName,
-        description: locationDescription
+        location_name: locationName,
+        description: locationDescription,
+        lat: originalLocation.lat,   // 🔥 FORCE PRESERVE
+        lng: originalLocation.lng
     };
 
-    // optimistic UI update
-    locationsOfUser[originalIndex] = {...updatedLocation};
-    renderLocations(locationsOfUser);
-
-    showToast(`updated location [${locationId}]`, "map");
 
     try {
         await httpService.put(`locations/${locationId}`, updatedLocation);
@@ -169,7 +168,8 @@ export async function editLocationAndPutInBackend(locationId) {
 
         nameElement.value = "";
         descriptionElement.value = "";
-
+        locationsOfUser[originalIndex] = { ...updatedLocation };
+        renderExistingPins();
         return updatedLocation;
     }
     catch (err) {
