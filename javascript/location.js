@@ -212,7 +212,6 @@ export async function deleteLocationFromBackend(locationId) {
         const res = await httpService.delete(`locations/${locationId}`)
 
         locationsOfUser = locationsOfUser.filter(l => l.id !== locationId);
-        renderLocations(locationsOfUser)
         console.log("DELETED LOCATION: ", res.data)
         showToast(`deleted location [${locationId}]`, "map");
 

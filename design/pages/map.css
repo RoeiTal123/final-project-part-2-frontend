@@ -90,15 +90,40 @@ label .svg:hover {
     grid-row: 2;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     gap: 16px;
     padding: 16px;
     background-color: var(--gray-one);
+}
+
+.feeder-list-box::-webkit-scrollbar {
+    display: none;
 }
 
 .feeder-list-box .feeder-list {
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+.location-owner{
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    justify-content: space-between;
+    align-items: center;
+    color: red;
+}
+
+.location-feeder{
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    justify-content: space-between;
+    align-items: center;
+    color: green;
 }
 
 .modal-buttons {

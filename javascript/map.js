@@ -1,7 +1,7 @@
 import { updateProfilePicture } from "./helper.js";
 import { createLocationAndPutInBackend, deleteLocationFromBackend, editLocationAndPutInBackend, locationByIdFromBackend, locationsOfUser, queryFromBackend } from "./location.js";
 import { showToast } from "./toast.js";
-import { getLoggedInUser } from "./user.js";
+import { getLoggedInUser, queryUsersFromBackend, users } from "./user.js";
 
 document.addEventListener("DOMContentLoaded", Main);
 
@@ -28,6 +28,7 @@ const pinPreview = document.getElementById("pin-preview");
 const mapContainer = document.getElementById("map-container");
 const nameElement = document.getElementById("location-name-input");
 const descriptionElement = document.getElementById("location-description-input");
+const feederListEl = document.querySelector(".feeder-list");
 
 async function Main() {
     initMap();
@@ -37,7 +38,8 @@ async function Main() {
 
     // Attach form modal action handlers
     document.querySelector(".cancel-button").addEventListener("click", () => toggleModal());
-    document.querySelector(".confirm-button").addEventListener("click", confirmLocation);
+    document.querySelector(".confirm-button").addEventListener("click", () => confirmLocation());
+    document.querySelector(".delete-button").addEventListener("click", () => deleteLocation());
 }
 
 function initMap() {
@@ -143,6 +145,11 @@ function toggleModal(lat, lng, location = null) {
         console.log(location)
         nameElement.value = location.location_name;
         descriptionElement.value = location.description;
+        if (location.feeders) {
+            renderFeeders()
+        } else {
+
+        }
     } else {
 
         nameElement.value = "";
@@ -181,26 +188,57 @@ async function confirmLocation() {
         currentEditingLocationId = null; // reset edit mode
         toggleModal()
         return;
-    }  else {
+    } else {
 
         const newLocation = await createLocationAndPutInBackend();
-        
-            // =========================
-            // CREATE NEW LOCATION
-            // =========================
-            const newLocationMarker = L.marker([currentSelectedLat, currentSelectedLng]).addTo(mapInstance);
-        
-            newLocationMarker.bindPopup(
-                `<b>${newLocation.location_name}</b><br>${newLocation.description}`
-            ).openPopup();
-        
-            newLocationMarker.id = `marker-${newLocation.id}`;
-            newLocationMarker.loc = newLocation;
-        
-            markerMap.set(newLocationMarker.id, newLocationMarker);
-        
-            console.log("Created new marker:", newLocation.id);
-            toggleModal()
+
+        // =========================
+        // CREATE NEW LOCATION
+        // =========================
+        const newLocationMarker = L.marker([currentSelectedLat, currentSelectedLng]).addTo(mapInstance);
+
+        newLocationMarker.bindPopup(
+            `<b>${newLocation.location_name}</b><br>${newLocation.description}`
+        ).openPopup();
+
+        newLocationMarker.id = `marker-${newLocation.id}`;
+        newLocationMarker.loc = newLocation;
+
+        markerMap.set(newLocationMarker.id, newLocationMarker);
+
+        console.log("Created new marker:", newLocation.id);
+        toggleModal()
+    }
+}
+
+async function deleteLocation() {
+    if (!currentEditingLocationId) {
+        showToast("No location selected to delete.", "map");
+        return;
+    }
+
+    const realId = Number(currentEditingLocationId.replace("marker-", ""));
+
+    try {
+        // delete from backend
+        await deleteLocationFromBackend(realId);
+
+        // delete marker from map
+        const marker = markerMap.get(currentEditingLocationId);
+
+        if (marker) {
+            mapInstance.removeLayer(marker);
+            markerMap.delete(currentEditingLocationId);
+        }
+
+        // remove from local array if you keep one
+
+        currentEditingLocationId = null;
+        toggleModal();
+
+    } catch (err) {
+        console.error("Failed to delete location:", err);
+        alert("Failed to delete location.");
     }
 }
 
@@ -243,4 +281,32 @@ export function renderExistingPins() {
 
 function getMarkerById(id) {
     return markerMap.get(id);
+}
+
+async function renderFeeders() {
+
+    if (currentEditingLocationId) {
+        const realId = Number(currentEditingLocationId.replace("marker-", ""));
+        const location = locationsOfUser.find(loc => loc.id === realId)
+        const users = await queryUsersFromBackend();
+        feederListEl.innerHTML = location.feeders.map(userId => {
+            console.log("users: "+users)
+            const user = users.find(u => u.id === userId);
+            console.log("user: "+user)
+            if (!user) return "";
+
+            const className =
+                userId === location.owner_id
+                    ? "owner"
+                    : "feeder";
+
+            return `
+        <div class="location-${className}" data-id="${user.id}">
+        <img src="${user.profile_pic_url}" class="feeder-logo"/>
+        <span>${user.username}</span>
+        </div>
+        `;
+        })
+            .join("");
+    }
 }

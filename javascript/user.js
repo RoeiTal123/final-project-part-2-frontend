@@ -3,6 +3,8 @@ import { showToast } from './toast.js';
 // Base URL pointing straight to your working Node/Express server backend
 const BASE_URL = 'http://localhost:3000/api/users';
 
+export let users = []
+
 export async function queryUsersFromBackend() {
     try {
         const response = await fetch(BASE_URL, {
@@ -11,6 +13,7 @@ export async function queryUsersFromBackend() {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const data = await response.json();
+        users = [...users]
         console.log("🔥 BACKEND USERS:", data);
         return data;
     } catch (err) {
