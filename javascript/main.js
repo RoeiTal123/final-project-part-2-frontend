@@ -1,4 +1,4 @@
-import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture } from "../javascript/helper.js"
+import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture } from "./javascript/helper.js"
 import { showToast, hideToast } from "./toast.js"
 import { clearSelectedMedia, setSelectedMedia } from "./media-state.js";
 import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from "./post.js"
