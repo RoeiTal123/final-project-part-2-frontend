@@ -1,4 +1,4 @@
-import { getLoggedInUser } from "./user"
+import { getLoggedInUser } from "./user.js"
 
 
 export function saveArrayToStorage(key, array) {
