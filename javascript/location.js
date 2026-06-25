@@ -9,7 +9,7 @@ import { getLoggedInUser } from './user.js';
 
 let userId = "4"
 
-export let locations = []
+export let locationsOfUser = []
 
 const nameElement = document.getElementById("location-name-input")
 const descriptionElement = document.getElementById("location-description-input")
@@ -23,7 +23,7 @@ export async function queryFromBackend(value = "") {
 
         console.log("🔥 BACKEND LOCATIONS:", res);
 
-        locations = res;
+        locationsOfUser = res;
         return res;
 
     } catch (err) {
@@ -104,8 +104,8 @@ export async function createLocationAndPutInBackend() {
         );
 
         console.log("🔥 CREATED LOCATION:", createdLocation);
-        locations.push(newLocation)
-        renderExistingPins(locations)
+        locationsOfUser.push(newLocation)
+        renderExistingPins(locationsOfUser)
         showToast(`created location`, "map");
 
         nameEl.value = "";
@@ -157,8 +157,8 @@ export async function editLocationAndPutInBackend(locationId) {
     };
 
     // optimistic UI update
-    locations[originalIndex] = {...updatedLocation};
-    renderLocations(locations);
+    locationsOfUser[originalIndex] = {...updatedLocation};
+    renderLocations(locationsOfUser);
 
     showToast(`updated location [${locationId}]`, "map");
 
@@ -176,8 +176,8 @@ export async function editLocationAndPutInBackend(locationId) {
         console.log("❌ Backend update failed:", err);
 
         // rollback
-        locations[originalIndex] = originalLocation;
-        renderLocations(locations);
+        locationsOfUser[originalIndex] = originalLocation;
+        renderLocations(locationsOfUser);
 
         showToast("update failed", "mamapin");
         return null;
@@ -193,6 +193,8 @@ export async function deleteLocationFromBackend(locationId) {
         return;
     }
 
+    const locations = await queryFromBackend();
+    console.log(locations)
     const location = locations.find(l => {
         return l.id === locationId
     });
@@ -210,8 +212,8 @@ export async function deleteLocationFromBackend(locationId) {
     try {
         const res = await httpService.delete(`locations/${locationId}`)
 
-        locations = locations.filter(l => l.id !== locationId);
-        renderLocations(locations)
+        locationsOfUser = locationsOfUser.filter(l => l.id !== locationId);
+        renderLocations(locationsOfUser)
         console.log("🔥 DELETED LOCATION:", res.data)
         showToast(`deleted location [${locationId}]`, "map");
 
@@ -224,6 +226,6 @@ export async function deleteLocationFromBackend(locationId) {
 }
 
 export async function theLocations() {
-    if (!locations) return null
-    return locations;
+    if (!locationsOfUser) return null
+    return locationsOfUser;
 }

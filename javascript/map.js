@@ -1,4 +1,5 @@
-import { createLocationAndPutInBackend, locationByIdFromBackend, locations, queryFromBackend } from "./location";
+import { updateProfilePicture } from "./helper";
+import { createLocationAndPutInBackend, deleteLocationFromBackend, locationByIdFromBackend, locationsOfUser, queryFromBackend } from "./location";
 import { showToast } from "./toast";
 import { getLoggedInUser } from "./user";
 
@@ -146,6 +147,7 @@ async function Main() {
     initMap();
     await retrieveLocations();
     renderExistingPins();
+    updateProfilePicture();
 
     // Attach form modal action handlers
     document.querySelector(".cancel-button").addEventListener("click", () => toggleModal());
@@ -269,7 +271,7 @@ function confirmLocation() {
 
 export function renderExistingPins() {
     // Loop through your database records collection to mount existing array structures
-    locations.forEach(loc => {
+    locationsOfUser.forEach(loc => {
         const marker = L.marker([loc.lat, loc.lng]).addTo(mapInstance);
         marker.bindPopup(`<b>${loc.location_name}</b><br>${loc.description}`);
     });
