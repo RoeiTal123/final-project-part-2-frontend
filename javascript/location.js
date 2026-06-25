@@ -142,12 +142,51 @@ export async function editLocationAndPutInBackend(locationId) {
     const originalLocation = locationsOfUser[originalIndex];
 
     // nothing changed check
+
+    const mediaWasOriginallyPresent = !!originalLocation.location_media_url;
+
+    const mediaReplaced = selectedMediaFile !== null;
+
+    const mediaRemoved =
+        selectedMediaFile === null &&
+        selectedMediaType === "none" &&
+        mediaWasOriginallyPresent;
+        
+    const mediaChanged = mediaRemoved || mediaReplaced;
+
+
     if (
-        originalLocation.name === locationName &&
-        originalLocation.description === locationDescription
+        originalLocation.location_name === locationName &&
+        originalLocation.description === locationDescription &&
+        !mediaChanged
     ) {
         showToast("nothing changed, not saving", "map");
         return null;
+    }
+
+    let mediaUrl = originalLocation.location_media_url;
+    let mediaType = originalLocation.media_type;
+
+    if (selectedMediaFile) {
+        try {
+            const upload = await uploadToCloudinary(selectedMediaFile);
+
+            mediaUrl = upload.url;
+            mediaType = selectedMediaType;
+
+        } catch (err) {
+            console.log("upload failed:", err);
+            showToast("media upload failed, keeping old media", "map");
+        }
+    }
+
+    if (
+        selectedMediaFile === null &&
+        selectedMediaType === "none" &&
+        originalLocation.location_media_url
+    ) {
+        mediaUrl = null;
+        mediaType = null;
     }
 
     // copy + overwrite
@@ -156,7 +195,9 @@ export async function editLocationAndPutInBackend(locationId) {
         location_name: locationName,
         description: locationDescription,
         lat: originalLocation.lat,   // 🔥 FORCE PRESERVE
-        lng: originalLocation.lng
+        lng: originalLocation.lng,
+        location_media_url: mediaUrl,
+        media_type: mediaType
     };
 
 
@@ -172,13 +213,12 @@ export async function editLocationAndPutInBackend(locationId) {
         return updatedLocation;
     }
     catch (err) {
-        console.log("ackend update failed: ", err);
+        console.log("backend update failed: ", err);
 
         // rollback
         locationsOfUser[originalIndex] = originalLocation;
-        renderLocations(locationsOfUser);
 
-        showToast("update failed", "mamapin");
+        showToast("update failed", "map");
         return null;
     }
 }

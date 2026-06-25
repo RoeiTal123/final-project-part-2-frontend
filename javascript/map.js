@@ -1,5 +1,6 @@
 import { updateProfilePicture } from "./helper.js";
 import { createLocationAndPutInBackend, deleteLocationFromBackend, editLocationAndPutInBackend, locationByIdFromBackend, locationsOfUser, queryFromBackend } from "./location.js";
+import { clearSelectedMedia, setSelectedMedia } from "./media-state.js";
 import { showToast } from "./toast.js";
 import { getLoggedInUser, queryUsersFromBackend, users } from "./user.js";
 
@@ -29,6 +30,43 @@ const mapContainer = document.getElementById("map-container");
 const nameElement = document.getElementById("location-name-input");
 const descriptionElement = document.getElementById("location-description-input");
 const feederListEl = document.querySelector(".feeder-list");
+const input = document.getElementById("location-file-input");
+const label = document.getElementById("location-upload-label");
+
+const originalLabelHTML = label.innerHTML;
+
+input.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setSelectedMedia(file);
+
+    const url = URL.createObjectURL(file);
+
+    if (file.type.startsWith("image/")) {
+        label.innerHTML = `
+            <img src="${url}" class="location-media-image">
+        `;
+    }
+
+    else if (file.type.startsWith("video/")) {
+        label.innerHTML = `
+            <video class="location-media-video" controls>
+                <source src="${url}">
+            </video>
+        `;
+    }
+
+    else {
+        label.innerHTML = "unsupported file type";
+    }
+});
+
+document.getElementById("location-input-remove-media").addEventListener("click", () => {
+    clearSelectedMedia();
+    input.value = "";
+    label.innerHTML = originalLabelHTML;
+});
 
 async function Main() {
     initMap();
@@ -124,21 +162,36 @@ function toggleModal(lat, lng, location = null) {
     const overlay = document.getElementById("modal-overlay");
 
     if (overlay.classList.contains("is-open")) {
-        // Closing: animate out, then hide after the transition finishes
+        // Closing
         overlay.classList.remove("is-open");
+
         setTimeout(() => {
             overlay.style.display = "none";
-        }, 200); // matches the 0.2s transition duration
+
+            // ✅ reset ONLY when fully closed
+            currentEditingLocationId = null;
+
+            // optional: also clear form state here
+            nameElement.value = "";
+            descriptionElement.value = "";
+            clearSelectedMedia();
+        }, 200);
     } else {
-        // Opening: show first, then add the class on the next frame so the transition triggers
         overlay.style.display = "flex";
 
         const modalHeader = document.getElementById("modal-header");
         modalHeader.innerHTML = `<span>Create new location</span><span class="coords">Lat: ${location ? location.lat.toFixed(4) : lat.toFixed(4)}, Lng: ${location ? location.lat.toFixed(4) : lng.toFixed(4)}</span>`;
 
+        // 🔥 ALWAYS reset media FIRST
+        clearSelectedMedia();
+        input.value = "";
+        label.innerHTML = originalLabelHTML;
+
         requestAnimationFrame(() => {
             overlay.classList.add("is-open");
         });
+
+        renderLocationMedia();
     }
 
     if (location) {
@@ -156,6 +209,7 @@ function toggleModal(lat, lng, location = null) {
         descriptionElement.value = "";
     }
 
+
 }
 
 async function confirmLocation() {
@@ -168,26 +222,28 @@ async function confirmLocation() {
         const realId = currentEditingLocationId.replace("marker-", "");
         const updatedLocation = await editLocationAndPutInBackend(Number(realId))
         console.log(updatedLocation)
-        const marker = markerMap.get(currentEditingLocationId);
+        if (updatedLocation) {
+            const marker = markerMap.get(currentEditingLocationId);
 
-        if (!marker) return;
+            if (!marker) return;
 
-        // update position
-        marker.setLatLng([currentSelectedLat, currentSelectedLng]);
+            // update position
+            marker.setLatLng([currentSelectedLat, currentSelectedLng]);
 
-        // update popup
-        marker.setPopupContent(
-            `<b>${updatedLocation.location_name}</b><br>${updatedLocation.description}`
-        );
+            // update popup
+            marker.setPopupContent(
+                `<b>${updatedLocation.location_name}</b><br>${updatedLocation.description}`
+            );
 
-        // update stored data
-        marker.loc = updatedLocation;
+            // update stored data
+            marker.loc = updatedLocation;
 
-        console.log("Edited marker:", currentEditingLocationId);
+            console.log("Edited marker:", currentEditingLocationId);
 
-        currentEditingLocationId = null; // reset edit mode
-        toggleModal()
-        return;
+            currentEditingLocationId = null; // reset edit mode
+            toggleModal()
+            return;
+        }
     } else {
 
         const newLocation = await createLocationAndPutInBackend();
@@ -208,6 +264,10 @@ async function confirmLocation() {
 
         console.log("Created new marker:", newLocation.id);
         toggleModal()
+        clearSelectedMedia();
+        input.value = "";
+        label.innerHTML = originalLabelHTML;
+        currentEditingLocationId = null;
     }
 }
 
@@ -284,15 +344,14 @@ function getMarkerById(id) {
 }
 
 async function renderFeeders() {
-
     if (currentEditingLocationId) {
         const realId = Number(currentEditingLocationId.replace("marker-", ""));
         const location = locationsOfUser.find(loc => loc.id === realId)
         const users = await queryUsersFromBackend();
         feederListEl.innerHTML = location.feeders.map(userId => {
-            console.log("users: "+users)
+            console.log("users: " + users)
             const user = users.find(u => u.id === userId);
-            console.log("user: "+user)
+            console.log("user: " + user)
             if (!user) return "";
 
             const className =
@@ -308,5 +367,31 @@ async function renderFeeders() {
         `;
         })
             .join("");
+    }
+}
+
+async function renderLocationMedia() {
+    // 🔥 ALWAYS start clean
+    label.innerHTML = originalLabelHTML;
+
+    if (currentEditingLocationId) {
+        const realId = Number(currentEditingLocationId.replace("marker-", ""));
+        const location = locationsOfUser.find(loc => loc.id === realId);
+
+        const fileUrl = location.location_media_url;
+
+        if (!fileUrl) return;
+
+        if (location.media_type === "image") {
+            label.innerHTML = `<img src="${fileUrl}" class="location-media-image">`;
+        }
+
+        else if (location.media_type === "video") {
+            label.innerHTML = `
+                <video class="location-media-video" controls>
+                    <source src="${fileUrl}">
+                </video>
+            `;
+        }
     }
 }

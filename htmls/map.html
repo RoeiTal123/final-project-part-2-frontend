@@ -3,11 +3,13 @@
 
 <head>
     <title>Cat Sanctuary</title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="../design/pages/map.css">
-    
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script type="module" src="../javascript/map.js" defer></script>
 </head>
 
@@ -16,7 +18,8 @@
         <!-- Wrap the logo and title together -->
         <div class="left-section">
             <a href="../htmls/main.html" class="logo">
-                <img class="logo-img" src="https://res.cloudinary.com/dukionlns/image/upload/v1782393905/Cat-Sanctuary-Logo_ajyh8w.svg" />
+                <img class="logo-img"
+                    src="https://res.cloudinary.com/dukionlns/image/upload/v1782393905/Cat-Sanctuary-Logo_ajyh8w.svg" />
             </a>
             <h1 class="header-title">Cat Sanctuary</h1>
         </div>
@@ -24,10 +27,12 @@
         <div class="on-right">
             <a href="../htmls/map.html" class="map-button">
                 <!-- CHANGE logo-img TO map-logo BELOW -->
-                <img class="map-logo" src="https://res.cloudinary.com/dukionlns/image/upload/v1782393916/Cat-Sanctuary-Map-Logo_hbkpoq.svg" />
+                <img class="map-logo"
+                    src="https://res.cloudinary.com/dukionlns/image/upload/v1782393916/Cat-Sanctuary-Map-Logo_hbkpoq.svg" />
             </a>
             <a href="../htmls/profile.html" class="profile-button">
-                <img class="profile-logo" src="https://res.cloudinary.com/dukionlns/image/upload/v1782123407/Profile_Button_j0t29p.png" />
+                <img class="profile-logo"
+                    src="https://res.cloudinary.com/dukionlns/image/upload/v1782123407/Profile_Button_j0t29p.png" />
             </a>
         </div>
     </header>
@@ -41,25 +46,39 @@
             <div class="modal-header" id="modal-header">
                 <!-- Spans are injected dynamically by JavaScript here -->
             </div>
-            <div><span>Location name: </span><input type="text" placeholder="location name" name="locationName" id="location-name-input"/></div>
+            <div><span>Location name: </span><input type="text" placeholder="location name" name="locationName"
+                    id="location-name-input" /></div>
             <div class="modal-grid">
-                <textarea class="location-description" id="location-description-input" placeholder="describe the location here"></textarea>
-                <div class="file-input">  
-                <input class="file-input-button" type="file" id="file-input"/>
-                <label for="file-input">
-                    <svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" fill="var(--black)">
-                    <g id="SVGRepo_bgCarrier" stroke-width="0"/>
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
-                    <g id="SVGRepo_iconCarrier">
-                    <defs>
-                    <style>.cls-1{fill:none;stroke:var(--gray-three);stroke-miterlimit:10;stroke-width:1.91px;}</style>
-                    </defs>
-                    <rect class="cls-1" x="1.5" y="1.5" width="21" height="21"/>
-                    <polyline class="cls-1" points="1.5 19.64 8.18 12.96 13.91 18.68 17.73 14.86 22.5 19.64"/>
-                    <circle class="cls-1" cx="13.91" cy="8.18" r="1.91"/>
-                    </g>
-                    </svg>
-                </label>
+                <textarea class="location-description" id="location-description-input"
+                    placeholder="describe the location here"></textarea>
+                <div class="location-file-input">
+                    <input class="location-file-input-button" type="file" id="location-file-input" />
+                    <label for="location-file-input" id="location-upload-label">
+                        <svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="Layer_1"
+                            data-name="Layer 1" fill="var(--black)">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+                            <g id="SVGRepo_iconCarrier">
+                                <defs>
+                                    <style>
+                                        .cls-1 {
+                                            fill: none;
+                                            stroke: var(--gray-three);
+                                            stroke-miterlimit: 10;
+                                            stroke-width: 1.91px;
+                                        }
+                                    </style>
+                                </defs>
+                                <rect class="cls-1" x="1.5" y="1.5" width="21" height="21" />
+                                <polyline class="cls-1"
+                                    points="1.5 19.64 8.18 12.96 13.91 18.68 17.73 14.86 22.5 19.64" />
+                                <circle class="cls-1" cx="13.91" cy="8.18" r="1.91" />
+                            </g>
+                        </svg>
+                    </label>
+                    <button class="location-input-remove-media" id="location-input-remove-media">
+                        remove media
+                    </button>
                 </div>
                 <div class="feeder-list-box" id="feeder-list">
                     <div class="feeder-list"> </div>
@@ -89,7 +108,8 @@
             </svg>
         </a>
         <a href="../htmls/profile.html" class="button-box">
-            <img class="profile-logo" src="https://res.cloudinary.com/dukionlns/image/upload/v1782123407/Profile_Button_j0t29p.png" />
+            <img class="profile-logo"
+                src="https://res.cloudinary.com/dukionlns/image/upload/v1782123407/Profile_Button_j0t29p.png" />
         </a>
     </footer>
 
