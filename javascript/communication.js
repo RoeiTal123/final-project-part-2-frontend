@@ -1,9 +1,10 @@
 
-const BASE_URL =                              // Search this URL
+const BASE_URL =
     window.location.hostname === 'localhost'
         ? 'http://localhost:3000/api/'
-        : '/api/'
+        : import.meta.env.VITE_API_URL;
 
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 export const httpService = { // Our methods of communication (Titles)
     get(endpoint, data) {
@@ -29,9 +30,9 @@ async function ajax(endpoint, method = 'GET', data = null) {
     }
 
     const hasBody =
-    ["POST", "PUT", "DELETE"].includes(method) &&
-    data !== null &&
-    data !== undefined;
+        ["POST", "PUT", "DELETE"].includes(method) &&
+        data !== null &&
+        data !== undefined;
 
     const response = await fetch(url, {
         method,

@@ -1,7 +1,10 @@
 import { showToast } from './toast.js';
 
 // Base URL pointing straight to your working Node/Express server backend
-const BASE_URL = 'http://localhost:3000/api/users';
+const BASE_URL =
+    window.location.hostname === 'localhost'
+        ? 'http://localhost:3000/api/'
+        : import.meta.env.VITE_API_URL;
 
 export let users = []
 
