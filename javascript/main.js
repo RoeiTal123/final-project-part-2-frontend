@@ -1,11 +1,14 @@
-import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture } from '../javascript/helper.js'
-import { showToast, hideToast } from './toast.js'
+import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture } from "../javascript/helper.js"
+import { showToast, hideToast } from "./toast.js"
 import { clearSelectedMedia, setSelectedMedia } from "./media-state.js";
-import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from './post.js'
-import { getLoggedInUser, queryUsersFromBackend } from './user.js';
+import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from "./post.js"
+import { getLoggedInUser, queryUsersFromBackend } from "./user.js";
 
 document.addEventListener("DOMContentLoaded", Main)
 const radios = document.querySelectorAll('input[name="sort"]');
+const cursorGlow = document.getElementById("cursor-glow");
+const input = document.getElementById("post-media-input");
+const mediaBox = document.getElementById("media-box");
 
 document.addEventListener("click", async (e) => {
     const createBtn = e.target.closest(".create-post-btn");
@@ -126,48 +129,14 @@ radios.forEach(radio => {
         renderPosts(postsToRender);
     });
 });
-const cursorGlow = document.getElementById("cursor-glow");
 
-document.addEventListener('mousemove', (e) => {
-    cursorGlow.style.setProperty('--mouse-x', `${e.clientX}px`);
-    cursorGlow.style.setProperty('--mouse-y', `${e.clientY}px`);
+document.addEventListener("mousemove", (e) => {
+    cursorGlow.style.setProperty("--mouse-x", `${e.clientX}px`);
+    cursorGlow.style.setProperty("--mouse-y", `${e.clientY}px`);
 
     const intensity = getNearestPostIntensity(e.clientX, e.clientY);
-    cursorGlow.style.setProperty('--glow-intensity', intensity);
+    cursorGlow.style.setProperty("--glow-intensity", intensity);
 });
-
-function getFalloffDistance() {
-    // Reads --glow-falloff-distance straight from CSS so this number
-    // only ever has to be edited in one place (the :root block).
-    const raw = getComputedStyle(document.documentElement)
-        .getPropertyValue('--glow-falloff-distance')
-        .trim();
-
-    return parseFloat(raw) || 250; // fallback if the variable is missing
-}
-
-function getNearestPostIntensity(x, y) {
-    const postBoxes = document.querySelectorAll(".post-box");
-    if (postBoxes.length === 0) return 0;
-
-    const falloffDistance = getFalloffDistance();
-    let minDistance = Infinity;
-
-    postBoxes.forEach((box) => {
-        const rect = box.getBoundingClientRect();
-        const dx = Math.max(rect.left - x, 0, x - rect.right);
-        const dy = Math.max(rect.top - y, 0, y - rect.bottom);
-        const distance = Math.hypot(dx, dy);
-
-        if (distance < minDistance) minDistance = distance;
-    });
-
-    const intensity = 1 - minDistance / falloffDistance;
-    return Math.max(0, Math.min(1, intensity));
-}
-
-const input = document.getElementById("post-media-input");
-const mediaBox = document.getElementById("media-box");
 
 input.addEventListener("change", (e) => {
     const file = e.target.files[0];
@@ -209,6 +178,37 @@ function Main() {
     updateMainContent()
     updateProfilePicture()
     //renderCommunities()
+}
+
+
+function getFalloffDistance() {
+    // Reads --glow-falloff-distance straight from CSS so this number
+    // only ever has to be edited in one place (the :root block).
+    const raw = getComputedStyle(document.documentElement)
+        .getPropertyValue("--glow-falloff-distance")
+        .trim();
+
+    return parseFloat(raw) || 250; // fallback if the variable is missing
+}
+
+function getNearestPostIntensity(x, y) {
+    const postBoxes = document.querySelectorAll(".post-box");
+    if (postBoxes.length === 0) return 0;
+
+    const falloffDistance = getFalloffDistance();
+    let minDistance = Infinity;
+
+    postBoxes.forEach((box) => {
+        const rect = box.getBoundingClientRect();
+        const dx = Math.max(rect.left - x, 0, x - rect.right);
+        const dy = Math.max(rect.top - y, 0, y - rect.bottom);
+        const distance = Math.hypot(dx, dy);
+
+        if (distance < minDistance) minDistance = distance;
+    });
+
+    const intensity = 1 - minDistance / falloffDistance;
+    return Math.max(0, Math.min(1, intensity));
 }
 
 export async function renderPosts(list) { // function that renders updates posts
@@ -257,11 +257,11 @@ export async function renderPosts(list) { // function that renders updates posts
                 }
                 <div class="post-footer">
                  <div class="like-container-wrapper" style="position: relative; display: inline-block;">
-                  <div class="like-btn ${liked ? 'is-liked' : ''}" data-id="${post.id}">
+                  <div class="like-btn ${liked ? "is-liked" : ""}" data-id="${post.id}">
                     <svg viewBox="0 -2 24 24" height="24px" id="meteor-icon-kit__solid-heart" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="var(--black)" stroke-width="${liked ? '0' : '0.24'}">
                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier">
-                    <path fill-rule="evenodd" clip-rule="evenodd" fill="${liked ? 'var(--red-two)' : 'none'}"
+                    <path fill-rule="evenodd" clip-rule="evenodd" fill="${liked ? "var(--red-two)" : "none"}"
                      d="M21.4281 11.714L13.9092 19.2329C12.8548 20.2873 11.1452 20.2873 10.0908 19.2329L2.57191 11.714C-0.0315858 9.1105 -0.0315856 4.8894 2.57191 2.28591C5.17541 -0.31759 9.3965 -0.31759 12 2.28591C14.6035 -0.31759 18.8246 -0.31759 21.4281 2.28591C24.0316 4.8894 24.0316 9.1105 21.4281 11.714z"/>
                     </g>
                     </svg>
@@ -322,9 +322,9 @@ function likePost(postId, userId) {
 function handleSortChange(selectedSort) {
     const url = new URL(window.location.href)
 
-    url.searchParams.set('sort', selectedSort)
+    url.searchParams.set("sort", selectedSort)
 
-    window.history.pushState({}, '', url)
+    window.history.pushState({}, "", url)
 }
 
 async function updateMainContent() {

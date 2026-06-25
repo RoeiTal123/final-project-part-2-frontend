@@ -123,7 +123,7 @@ label .svg:hover {
     width: 24px;
     height: 24px;
     background-color: var(--blue-two);
-    border: 2px solid white;
+    border: 2px solid var(--white);
     border-radius: 50% 50% 50% 0;
     transform: translate(25px, -100%) rotate(-45deg);
     transform-origin: bottom left;

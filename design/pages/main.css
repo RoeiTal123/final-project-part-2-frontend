@@ -127,7 +127,7 @@
     padding: 16px;
     gap: 16px;
     overflow-y: auto;
-    scrollbar-color: lightgray white;
+    scrollbar-color: var(--gray-four) var(--white);
 }
 
 .cat-communities-box .communities-box {
@@ -150,15 +150,15 @@
 }
 
 .community-name.red{
-    color: red;
+    color: var(--red-two);
 }
 
 .community-name.yellow{
-    color: yellow;
+    color: var(--yellow);
 }
 
 .community-name.green{
-    color: green;
+    color: var(--green-four);
 }
 
 .posts-container {
@@ -386,30 +386,30 @@
 
 .input-media-image {
     max-height: 100%;
-    background-color: black;
+    background-color: var(--black);
 }
 
 .input-media-video {
     max-height: 100%;
-    background-color: black;
+    background-color: var(--black);
 }
 
 .post-user-name {
     font-weight: 700;
-    color: #1a1a1ac9;
+    color: var(--black-one);
     font-size: 1.05rem;
 }
 
 .post-title {
     font-weight: 600;
     font-size: 1.2rem;
-    color: #000000cc;
+    color: var(--black-two);
     margin-block-start: 4px; 
 }
 
 .post-date {
     font-size: 0.85rem;
-    color: #757575; 
+    color: var(--gray-five); 
     font-weight: 400;
 }
 
@@ -417,7 +417,7 @@
     padding: 0 16px 16px 16px;
     font-size: 0.95rem;
     line-height: 1.5; 
-    color: #2d2d2d;   
+    color: var(--gray-six);   
 }
 
 .post-box .post-header,

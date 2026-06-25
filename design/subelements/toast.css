@@ -59,13 +59,13 @@
 }
 
 .toast-close:hover {
-  color: #fff;
+  color: var(--white);
   transform: scale(1.2);
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 12px rgba(255, 255, 255, 0.4);
 }
 
 .toast-close:focus-visible {
-  color: #fff;
+  color: var(--white);
   transform: scale(1.2);
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
@@ -73,7 +73,7 @@
 /* Base Toast Styles (Neutral properties shared across all types) */
 .toast {
   background: rgba(34, 34, 34, .8);
-  color: white;
+  color: var(--white);
 
   padding: 16px;
   border-radius: 10px;
@@ -122,7 +122,7 @@
 }
 .toast.warning .toast-icon::before {
   content: "\26A0"; /* ⚠ Warning icon */
-  color: #ffa500;
+  color: var(--orange);
 }
 
 /* --- 2. Success Theme (Green) --- */
@@ -135,7 +135,7 @@
 }
 .toast.success .toast-icon::before {
   content: "\2714"; /* ✔ Checkmark icon */
-  color: #2ecc71;
+  color: var(--green-five);
 }
 
 /* --- 3. Error Theme (Red) --- */
@@ -148,5 +148,5 @@
 }
 .toast.error .toast-icon::before {
   content: "\26D4"; /* ⛔ No Entry / Stop sign icon */
-  color: #e74c3c;
+  color: var( --red-three);
 }

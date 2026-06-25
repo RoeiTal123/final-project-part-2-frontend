@@ -1,12 +1,12 @@
 const chats = [{
-    _id: "1", chatName: "tuxedo owners", chatLogo: "", chatters: ["1", "3"],
-    messages: [{ _id: "1", text: "hey" }, { _id: "3", text: "hey" }, { _id: "1", text: "how are you doing?" }],
+    id: 1, chatName: "tuxedo owners", chatLogo: "", chatters: [1, 3],
+    messages: [{ id: 1, text: "hey" }, { id: 3, text: "hey" }, { id: 1, text: "how are you doing?" }],
     createdAt: 1767564832000
 }]
 
 const communities = [
     {
-        _id: 1,
+        id: 1,
         communityName: "Meower Haven",
         communityLogo: "",
         communityBakcground: "",
@@ -17,7 +17,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 10
     },
     {
-        _id: 2,
+        id: 2,
         communityName: "Purrfect Coders",
         communityLogo: "",
         communityBakcground: "",
@@ -28,7 +28,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 200
     },
     {
-        _id: 3,
+        id: 3,
         communityName: "Whisker Warriors",
         communityLogo: "",
         communityBakcground: "",
@@ -39,7 +39,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 400
     },
     {
-        _id: 4,
+        id: 4,
         communityName: "Claw & Order",
         communityLogo: "",
         communityBakcground: "",
@@ -50,7 +50,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 600
     },
     {
-        _id: 5,
+        id: 5,
         communityName: "Catnip Collective",
         communityLogo: "",
         communityBakcground: "",
@@ -61,7 +61,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 800
     },
     {
-        _id: 6,
+        id: 6,
         communityName: "Feline Fitness Club",
         communityLogo: "",
         communityBakcground: "",
@@ -72,7 +72,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1000
     },
     {
-        _id: 7,
+        id: 7,
         communityName: "Memeow Cinema",
         communityLogo: "",
         communityBakcground: "",
@@ -83,7 +83,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1100
     },
     {
-        _id: 8,
+        id: 8,
         communityName: "Startup Cats",
         communityLogo: "",
         communityBakcground: "",
@@ -94,7 +94,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1200
     },
     {
-        _id: 9,
+        id: 9,
         communityName: "Book of Paws",
         communityLogo: "",
         communityBakcground: "",
@@ -105,7 +105,7 @@ const communities = [
         createdAt: Date.now() - 1000 * 60 * 60 * 24 * 1500
     },
     {
-        _id: 10,
+        id: 10,
         communityName: "Random Meowments",
         communityLogo: "",
         communityBakcground: "",

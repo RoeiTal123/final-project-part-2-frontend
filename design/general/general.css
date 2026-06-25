@@ -20,13 +20,23 @@
     --green-one: #BBFFAB;
     --green-two: #9BE18B;
     --green-three: #7EF684;
+    --green-four: #008000;
+    --green-five: #2ecc71;
     --gray-one: #D9D9D9;
     --gray-two: #F2EDE8;
     --gray-three: #615F5F;
+    --gray-four: lightgray;
+    --gray-five: #757575;
+    --gray-six: #2d2d2d;
     --red-one: #DE7E7E;
     --red-two: #ff0000;
+    --red-three: #e74c3c;
+    --yellow: yellow;
+    --orange: #ffa500;
     --white: #FFFFFF;
     --black: #000000;
+    --black-one: #1a1a1ac9;
+    --black-two: #000000cc;
 }
 
 * {
@@ -191,7 +201,7 @@ textarea{
     flex-grow: 1;
     height: 100%;
     width: 100%;
-    background-image: url(../images/Background.png);
+    background-image: url(https://res.cloudinary.com/dukionlns/image/upload/v1782123393/Background_bkb2s7.png);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

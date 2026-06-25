@@ -1,10 +1,10 @@
-import { showToast } from './toast.js'
-import { generateId } from './helper.js'
-import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from '../javascript/helper.js'
+import { showToast } from "./toast.js"
+import { generateId } from "./helper.js"
+import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from "../javascript/helper.js"
 import { httpService } from "./communication.js";
-import { renderPosts } from './main.js';
+import { renderPosts } from "./main.js";
 import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
-import { getLoggedInUser } from './user.js';
+import { getLoggedInUser } from "./user.js";
 
 let postsKey = "posts"
 
@@ -23,7 +23,7 @@ export async function queryFromBackend(value = "") {
             { sort: value }
         );
 
-        console.log("🔥 BACKEND POSTS:", res);
+        console.log("BACKEND POSTS:", res);
 
         posts = res;
         renderPosts(posts)
@@ -39,7 +39,7 @@ export async function postByIdFromBackend(postId) {
     try {
         const post = await httpService.get(`posts/${postId}`, "GET");
 
-        console.log("🔥 BACKEND POST:", post);
+        console.log("BACKEND POST: ", post);
 
         return post;
 
@@ -85,7 +85,7 @@ export async function createPostAndPutInBackend() {
             console.log("upload failed:", err);
             showToast("media upload failed, posting without media", "main");
 
-            // 🚨 DO NOTHING ELSE
+            // DO NOTHING ELSE
             mediaUrl = null;
             mediaPublicId = null;
             mediaType = null;
@@ -110,7 +110,7 @@ export async function createPostAndPutInBackend() {
             newPost
         );
 
-        console.log("🔥 CREATED POST:", createdPost);
+        console.log("CREATED POST: ", createdPost);
         posts.push(newPost)
         renderPosts(posts)
         showToast(`created post`, "main");
@@ -123,7 +123,7 @@ export async function createPostAndPutInBackend() {
         return createdPost;
     }
     catch (err) {
-        console.log("❌ Backend create failed:", err);
+        console.log("Backend create failed: ", err);
         return null;
     }
 }
@@ -257,13 +257,13 @@ export async function deletePostFromBackend(postId) {
         posts = posts.filter(p => p.id !== postId);
         renderPosts(posts);
 
-        console.log("🔥 DELETED POST:", res);
+        console.log("DELETED POST: ", res);
         showToast(`deleted post [${postId}]`, "main");
 
         return res;
 
     } catch (err) {
-        console.log("❌ Backend delete failed:", err);
+        console.log("Backend delete failed: ", err);
         showToast("delete failed", "main");
         return null;
     }
@@ -426,6 +426,6 @@ export async function toggleLike(postId, userId) {
 
         saveArrayToStorage("posts", posts);
     } catch (err) {
-        console.log("❌ toggleLike failed:", err);
+        console.log("toggleLike failed:", err);
     }
 }
