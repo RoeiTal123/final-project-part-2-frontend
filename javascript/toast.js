@@ -31,8 +31,6 @@ export function showToast(message, pageName = "main", type = "warning", duration
     hideToast(toast);
   };
 
-  // click anywhere = pin (stop auto-remove)
-  let pinned = false;
 
   toast.addEventListener("click", () => {
     pinned = true;

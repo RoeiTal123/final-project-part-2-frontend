@@ -16,6 +16,9 @@ const CLICK_TIME_LIMIT = 200;
 let mouseDownTime = null;
 let mouseDownPoint = null;
 let hasMouseMoved = false;
+let markerClickEnabled = true;
+let currentEditingLocationId;
+const markerMap = new Map();
 
 // Idle-hover pin preview
 const IDLE_READY_DELAY = 200; // ms — how long the mouse must sit still before showing the preview pin
@@ -201,14 +204,10 @@ async function confirmLocation() {
     }
 }
 
-let markerClickEnabled = true;
-let currentEditingLocationId;
-
 export function setMarkerClickEnabled(state) {
     markerClickEnabled = state;
 }
 
-const markerMap = new Map();
 
 export function clearExistingPins() {
     markerMap.forEach(marker => {

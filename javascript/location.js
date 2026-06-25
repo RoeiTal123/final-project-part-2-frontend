@@ -1,11 +1,11 @@
-import { showToast } from './toast.js'
-import { generateId, uploadToCloudinary } from './helper.js'
-import { saveArrayToStorage, getArrayFromStorage } from '../javascript/helper.js'
+import { showToast } from "./toast.js"
+import { generateId, uploadToCloudinary } from "./helper.js"
+import { saveArrayToStorage, getArrayFromStorage } from "../javascript/helper.js"
 import { httpService } from "./communication.js";
-import { currentSelectedLat, currentSelectedLng } from './map.js';
+import { currentSelectedLat, currentSelectedLng } from "./map.js";
 import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
-import { renderExistingPins } from './map.js'
-import { getLoggedInUser } from './user.js';
+import { renderExistingPins } from "./map.js"
+import { getLoggedInUser } from "./user.js";
 
 let userId = "4"
 
@@ -21,13 +21,13 @@ export async function queryFromBackend(value = "") {
             { user_id: value }
         );
 
-        console.log("🔥 BACKEND LOCATIONS:", res);
+        console.log("BACKEND LOCATIONS: ", res);
 
         locationsOfUser = res;
         return res;
 
     } catch (err) {
-        console.log("❌ Backend query failed:", err);
+        console.log("Backend query failed: ", err);
         return null;
     }
 }
@@ -36,12 +36,12 @@ export async function locationByIdFromBackend(locationId) {
     try {
         const location = await httpService.get(`locations/${locationId}`, "GET");
 
-        console.log("🔥 BACKEND LOCATION:", location);
+        console.log("BACKEND LOCATION: ", location);
 
         return location;
 
     } catch (err) {
-        console.log("❌ Backend query failed:", err);
+        console.log("Backend query failed: ", err);
         return null;
     }
 }
@@ -79,7 +79,6 @@ export async function createLocationAndPutInBackend() {
             console.log("upload failed:", err);
             showToast("media upload failed, posting without media", "map");
 
-            // 🚨 DO NOTHING ELSE
             mediaUrl = null;
             mediaType = null;
         }
@@ -103,7 +102,7 @@ export async function createLocationAndPutInBackend() {
             newLocation
         );
 
-        console.log("🔥 CREATED LOCATION:", createdLocation);
+        console.log("CREATED LOCATION: ", createdLocation);
         locationsOfUser.push(newLocation)
         renderExistingPins(locationsOfUser)
         showToast(`created location`, "map");
@@ -115,7 +114,7 @@ export async function createLocationAndPutInBackend() {
         return createdLocation;
     }
     catch (err) {
-        console.log("❌ Backend create failed:", err);
+        console.log("Backend create failed: ", err);
         return null;
     }
 }
@@ -173,7 +172,7 @@ export async function editLocationAndPutInBackend(locationId) {
         return updatedLocation;
     }
     catch (err) {
-        console.log("❌ Backend update failed:", err);
+        console.log("ackend update failed: ", err);
 
         // rollback
         locationsOfUser[originalIndex] = originalLocation;
@@ -214,13 +213,13 @@ export async function deleteLocationFromBackend(locationId) {
 
         locationsOfUser = locationsOfUser.filter(l => l.id !== locationId);
         renderLocations(locationsOfUser)
-        console.log("🔥 DELETED LOCATION:", res.data)
+        console.log("DELETED LOCATION: ", res.data)
         showToast(`deleted location [${locationId}]`, "map");
 
         return res.data
     }
     catch (err) {
-        console.log("❌ Backend create failed:", err)
+        console.log("Backend create failed: ", err)
         return null
     }
 }
