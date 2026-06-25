@@ -11,7 +11,7 @@ export let users = []
 
 export async function queryUsersFromBackend() {
     try {
-        const response = await fetch(BASE_URL, {
+        const response = await fetch(`${BASE_URL}users`, {
             credentials: 'include'
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
