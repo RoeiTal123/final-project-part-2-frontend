@@ -1,6 +1,6 @@
 import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture } from '../javascript/helper.js'
 import { showToast, hideToast } from './toast.js'
-import { setSelectedMedia } from "./media-state.js";
+import { clearSelectedMedia, setSelectedMedia } from "./media-state.js";
 import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from './post.js'
 import { getLoggedInUser, queryUsersFromBackend } from './user.js';
 
@@ -197,6 +197,12 @@ input.addEventListener("change", (e) => {
     else {
         mediaBox.innerHTML = "unsupported file type";
     }
+});
+
+document.querySelector(".input-remove-media").addEventListener("click", () => {
+    clearSelectedMedia()
+    input.value = "";
+    mediaBox.innerHTML = "";
 });
 
 function Main() {

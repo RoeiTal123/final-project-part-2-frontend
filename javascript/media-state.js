@@ -4,6 +4,11 @@ export let selectedMediaType = "none";
 export function setSelectedMedia(file) {
     selectedMediaFile = file;
 
+    if (file === null || file === undefined) {
+        selectedMediaType = "none";
+        return
+    }
+
     if (file.type.startsWith("image/")) {
         selectedMediaType = "image";
     } 

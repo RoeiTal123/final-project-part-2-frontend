@@ -52,6 +52,7 @@ export async function postByIdFromBackend(postId) {
 export async function createPostAndPutInBackend() {
     const titleEl = document.getElementById("post-title-input")
     const descEl = document.getElementById("post-description-input")
+    const mediaBox = document.getElementById("media-box");
 
     const title = titleEl.value.trim()
     const desc = descEl.value.trim()
@@ -116,6 +117,7 @@ export async function createPostAndPutInBackend() {
 
         titleEl.value = "";
         descEl.value = "";
+        mediaBox.innerHTML = "";
         clearSelectedMedia();
 
         return createdPost;
@@ -129,6 +131,7 @@ export async function createPostAndPutInBackend() {
 export async function editPostAndPutInBackend(postId) {
     const titleEl = document.getElementById("post-title-input");
     const descEl = document.getElementById("post-description-input");
+    const mediaBox = document.getElementById("media-box");
 
     const title = titleEl.value.trim();
     const desc = descEl.value.trim();
@@ -148,13 +151,14 @@ export async function editPostAndPutInBackend(postId) {
 
     const originalPost = posts[originalIndex];
 
-    const mediaChanged = selectedMediaFile !== null;
+    const mediaChanged = selectedMediaFile !== null || selectedMediaType === "none";
 
     // nothing changed check
     if (
         originalPost.title === title &&
         originalPost.description === desc &&
-        !mediaChanged
+        selectedMediaFile === null &&
+        selectedMediaType !== "none"
     ) {
         showToast("nothing changed, not saving", "main");
         return null;
@@ -165,7 +169,12 @@ export async function editPostAndPutInBackend(postId) {
 
     // copy + overwrite
     try {
-        if (mediaChanged) {
+
+        if (selectedMediaType === "none") {
+            mediaUrl = null;
+            mediaType = null;
+        }
+        else if (selectedMediaFile) {
             const uploadResult = await uploadToCloudinary(
                 selectedMediaFile,
                 selectedMediaType
@@ -193,6 +202,7 @@ export async function editPostAndPutInBackend(postId) {
 
         titleEl.value = "";
         descEl.value = "";
+        mediaBox.innerHTML = "";
 
         clearSelectedMedia();
 
@@ -211,7 +221,7 @@ export async function editPostAndPutInBackend(postId) {
 }
 
 export async function deletePostFromBackend(postId) {
-    
+
     const loggedUser = getLoggedInUser()
     if (!postId) {
         showToast("invalid post", "main");
@@ -239,9 +249,9 @@ export async function deletePostFromBackend(postId) {
 
         // 2. ONLY proceed if backend confirms success
         if (!res.success) {
-        showToast("delete failed", "main");
-        return null;
-    }
+            showToast("delete failed", "main");
+            return null;
+        }
 
         // 3. remove locally ONLY after confirmation
         posts = posts.filter(p => p.id !== postId);
@@ -256,7 +266,7 @@ export async function deletePostFromBackend(postId) {
         console.log("❌ Backend delete failed:", err);
         showToast("delete failed", "main");
         return null;
-    } 
+    }
 }
 
 export async function thePosts() {
@@ -321,7 +331,7 @@ export function createPost() {
 
     const title = titleEl.value.trim()
     const desc = descEl.value.trim()
-    
+
     const loggedUser = getLoggedInUser()
 
     if (!title) {
@@ -358,7 +368,7 @@ export function createPost() {
     descEl.value = "";
 
     showToast(`created post [${newPost.id}]`, "main");
-} 
+}
 
 // =====================
 // DELETE POST
@@ -405,17 +415,17 @@ export async function toggleLike(postId, userId) {
 
             post.likedByUsers = post.likedByUsers.filter(id => id !== userId);
 
-            showToast("unliked post","main", "success");
+            showToast("unliked post", "main", "success");
         } else {
             await httpService.post(`posts/${postId}/likes`, { userId });
 
             post.likedByUsers.push(userId);
-            showToast("liked post","main", "success");
+            showToast("liked post", "main", "success");
         }
         renderPosts(posts)
 
         saveArrayToStorage("posts", posts);
     } catch (err) {
         console.log("❌ toggleLike failed:", err);
-    } 
+    }
 }
