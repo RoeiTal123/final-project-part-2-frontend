@@ -56,7 +56,7 @@ export async function addUser(userDetails) {
 
 export async function checkForUser(username, password) {
     try {
-        const response = await fetch(`${BASE_URL}/login`, {
+        const response = await fetch(`${BASE_URL}users/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

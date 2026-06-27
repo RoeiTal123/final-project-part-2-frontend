@@ -3,7 +3,7 @@ import { generateId, uploadToCloudinary } from "./helper.js"
 import { saveArrayToStorage, getArrayFromStorage } from "./helper.js"
 import { httpService } from "./communication.js";
 import { currentSelectedLat, currentSelectedLng } from "./map.js";
-import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
+import { selectedMediaFile, selectedMediaType, clearSelectedMedia, resetMediaState } from "./media-state.js";
 import { renderExistingPins } from "./map.js"
 import { getLoggedInUser } from "./user.js";
 
@@ -109,7 +109,7 @@ export async function createLocationAndPutInBackend() {
 
         nameEl.value = "";
         descEl.value = "";
-        clearSelectedMedia();
+        resetMediaState();
 
         return createdLocation;
     }

@@ -3,7 +3,7 @@ import { generateId } from "./helper.js"
 import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from "./helper.js"
 import { httpService } from "./communication.js";
 import { renderPosts } from "./main.js";
-import { selectedMediaFile, selectedMediaType, clearSelectedMedia } from "./media-state.js";
+import { selectedMediaFile, selectedMediaType, clearSelectedMedia, resetMediaState, mediaAction } from "./media-state.js";
 import { getLoggedInUser } from "./user.js";
 
 let postsKey = "posts"
@@ -118,7 +118,7 @@ export async function createPostAndPutInBackend() {
         titleEl.value = "";
         descEl.value = "";
         mediaBox.innerHTML = "";
-        clearSelectedMedia();
+        resetMediaState();
 
         return createdPost;
     }
@@ -151,14 +151,12 @@ export async function editPostAndPutInBackend(postId) {
 
     const originalPost = posts[originalIndex];
 
-    const mediaChanged = selectedMediaFile !== null || selectedMediaType === "none";
 
     // nothing changed check
     if (
         originalPost.title === title &&
         originalPost.description === desc &&
-        selectedMediaFile === null &&
-        selectedMediaType !== "none"
+        mediaAction === "keep"
     ) {
         showToast("nothing changed, not saving", "main");
         return null;
@@ -170,11 +168,11 @@ export async function editPostAndPutInBackend(postId) {
     // copy + overwrite
     try {
 
-        if (selectedMediaType === "none") {
+        if (mediaAction === "remove") {
             mediaUrl = null;
             mediaType = null;
         }
-        else if (selectedMediaFile) {
+        else if (mediaAction === "replace") {
             const uploadResult = await uploadToCloudinary(
                 selectedMediaFile,
                 selectedMediaType
@@ -204,7 +202,7 @@ export async function editPostAndPutInBackend(postId) {
         descEl.value = "";
         mediaBox.innerHTML = "";
 
-        clearSelectedMedia();
+        resetMediaState();
 
         return updatedPost;
     }

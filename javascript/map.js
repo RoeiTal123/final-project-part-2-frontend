@@ -1,6 +1,6 @@
 import { updateProfilePicture } from "./helper.js";
 import { createLocationAndPutInBackend, deleteLocationFromBackend, editLocationAndPutInBackend, locationByIdFromBackend, locationsOfUser, queryFromBackend } from "./location.js";
-import { clearSelectedMedia, setSelectedMedia } from "./media-state.js";
+import { clearSelectedMedia, resetMediaState, setSelectedMedia } from "./media-state.js";
 import { showToast } from "./toast.js";
 import { getLoggedInUser, queryUsersFromBackend, users } from "./user.js";
 
@@ -174,7 +174,7 @@ function toggleModal(lat, lng, location = null) {
             // optional: also clear form state here
             nameElement.value = "";
             descriptionElement.value = "";
-            clearSelectedMedia();
+            resetMediaState();
         }, 200);
     } else {
         overlay.style.display = "flex";
@@ -183,7 +183,7 @@ function toggleModal(lat, lng, location = null) {
         modalHeader.innerHTML = `<span>Create new location</span><span class="coords">Lat: ${location ? location.lat.toFixed(4) : lat.toFixed(4)}, Lng: ${location ? location.lat.toFixed(4) : lng.toFixed(4)}</span>`;
 
         // 🔥 ALWAYS reset media FIRST
-        clearSelectedMedia();
+        resetMediaState();
         input.value = "";
         label.innerHTML = originalLabelHTML;
 
@@ -208,8 +208,6 @@ function toggleModal(lat, lng, location = null) {
         nameElement.value = "";
         descriptionElement.value = "";
     }
-
-
 }
 
 async function confirmLocation() {
@@ -264,7 +262,7 @@ async function confirmLocation() {
 
         console.log("Created new marker:", newLocation.id);
         toggleModal()
-        clearSelectedMedia();
+        resetMediaState();
         input.value = "";
         label.innerHTML = originalLabelHTML;
         currentEditingLocationId = null;

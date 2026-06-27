@@ -1,6 +1,6 @@
 import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture } from "./helper.js"
 import { showToast, hideToast } from "./toast.js"
-import { clearSelectedMedia, setSelectedMedia } from "./media-state.js";
+import { clearSelectedMedia, resetMediaState, setSelectedMedia } from "./media-state.js";
 import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from "./post.js"
 import { getLoggedInUser, queryUsersFromBackend } from "./user.js";
 
@@ -41,6 +41,7 @@ document.addEventListener("click", async (e) => {
         // reset UI inputs
         document.getElementById("post-title-input").value = "";
         document.getElementById("post-description-input").value = "";
+        mediaBox.innerHTML = "";
 
         createBtn.textContent = "Create Post";
 
@@ -61,27 +62,28 @@ document.addEventListener("click", async (e) => {
         const postId = Number(editBtn.dataset.id);
         const posts = await thePosts();
         const post = posts.find(p => p.id === postId);
+        resetMediaState();
 
         document.getElementById("post-title-input").value = post.title;
         document.getElementById("post-description-input").value = post.description;
 
-        mediaBox.innerHTML = "";
+        mediaBox.innerHTML = ">media will be here";
 
-        if (!post.media_url) return;
-
-        if (post.media_type === "image") {
-            const img = document.createElement("img");
-            img.src = post.media_url;
-            img.classList.add("input-media-image");
-            mediaBox.appendChild(img);
-        }
-
-        if (post.media_type === "video") {
-            const video = document.createElement("video");
-            video.src = post.media_url;
-            video.controls = true;
-            video.classList.add("input-media-video");
-            mediaBox.appendChild(video);
+        if (post.media_url){
+            if (post.media_type === "image") {
+                const img = document.createElement("img");
+                img.src = post.media_url;
+                img.classList.add("input-media-image");
+                mediaBox.appendChild(img);
+            }
+    
+            if (post.media_type === "video") {
+                const video = document.createElement("video");
+                video.src = post.media_url;
+                video.controls = true;
+                video.classList.add("input-media-video");
+                mediaBox.appendChild(video);
+            }
         }
 
         const createBtn = document.querySelector(".create-post-btn");
