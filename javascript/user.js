@@ -1,5 +1,5 @@
 import { showToast } from './toast.js';
-import { showLoading, hideLoading } from './loading.js';
+// import { showLoading, hideLoading } from './loading.js';
 
 // Base URL pointing straight to your working Node/Express server backend
 const BASE_URL =
