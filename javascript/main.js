@@ -69,19 +69,31 @@ document.addEventListener("click", async (e) => {
 
         mediaBox.innerHTML = ">media will be here";
 
-        if (post.media_url){
+        if (post.media_url) {
             if (post.media_type === "image") {
                 const img = document.createElement("img");
                 img.src = post.media_url;
                 img.classList.add("input-media-image");
+                img.onerror = () => {
+                    img.onerror = null;
+                    img.src = "https://res.cloudinary.com/dukionlns/image/upload/v1782661641/NoFileFound_hnqkoh.png";
+                };
                 mediaBox.appendChild(img);
             }
-    
+
             if (post.media_type === "video") {
                 const video = document.createElement("video");
                 video.src = post.media_url;
                 video.controls = true;
                 video.classList.add("input-media-video");
+
+                video.onerror = () => {
+                    const img = document.createElement("img");
+                    img.src = "https://res.cloudinary.com/dukionlns/image/upload/v1782661641/NoFileFound_hnqkoh.png";
+                    img.classList.add("input-media-image");
+                    video.replaceWith(img);
+                };
+
                 mediaBox.appendChild(video);
             }
         }
@@ -248,13 +260,18 @@ export async function renderPosts(list) { // function that renders updates posts
                            </div>
                        </div>
                        <div class="post-description">${post.description}</div>
-                       ${post.media_url
-                    ? `<div class="post-media">
-                            ${post.media_type === "video"
-                        ? `<video class="post-video" controls src="${post.media_url}"></video>`
-                        : `<img class="post-image" src="${post.media_url}" />`
+                       ${post.media_url ? `<div class="post-media">
+                            ${post.media_type === "video" ? `<video
+                            class="post-video" controls src="${post.media_url}"
+                            onerror="this.outerHTML='<img class=&quot;post-image&quot; src=&quot;https://res.cloudinary.com/dukionlns/image/upload/v1782661641/NoFileFound_hnqkoh.png&quot;>';"
+                            ></video>`
+                        : `<img
+                            class="post-image"
+                            src="${post.media_url}"
+                            onerror="this.onerror=null; this.src='https://res.cloudinary.com/dukionlns/image/upload/v1782661641/NoFileFound_hnqkoh.png';"
+                            />`
                     }
-                            </div>`
+                        </div>`
                     : ""
                 }
                 <div class="post-footer">

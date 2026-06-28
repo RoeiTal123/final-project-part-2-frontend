@@ -45,20 +45,30 @@ input.addEventListener("change", (e) => {
 
     if (file.type.startsWith("image/")) {
         label.innerHTML = `
-            <img src="${url}" class="location-media-image">
+            <img
+                src="${url}"
+                class="location-media-image"
+                onerror="this.onerror=null; this.src='https://res.cloudinary.com/dukionlns/image/upload/v1782661641/NoFileFound_hnqkoh.png';"
+            >
         `;
     }
 
     else if (file.type.startsWith("video/")) {
         label.innerHTML = `
-            <video class="location-media-video" controls>
+            <video class="location-media-video" controls
+                onerror="this.outerHTML='<img class=&quot;location-media-image&quot; src=&quot;https://res.cloudinary.com/dukionlns/image/upload/v1782661641/NoFileFound_hnqkoh.png&quot;>';">
                 <source src="${url}">
             </video>
         `;
     }
 
     else {
-        label.innerHTML = "unsupported file type";
+        label.innerHTML = `
+            <img
+                src="https://res.cloudinary.com/dukionlns/image/upload/v1782661641/NoFileFound_hnqkoh.png"
+                class="location-media-image"
+            >
+        `;
     }
 });
 
