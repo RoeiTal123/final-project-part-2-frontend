@@ -1,6 +1,7 @@
 import { showToast } from "./toast.js";
 import { addUser, checkForUser } from "./user.js"; 
 
+
 const showSignup = (event) => {
     if (event) event.preventDefault();
     document.getElementById('loginWindow').classList.add('hidden');
@@ -49,7 +50,7 @@ async function submitLoginForm() {
     const passwordInput = document.getElementById("login-password");
 
     if (!usernameInput.value || !passwordInput.value) {
-        showToast("Please enter both username and password.", "error");
+        showToast("Please enter both username and password.", "login", "error");
         return;
     }
 
@@ -80,7 +81,7 @@ async function submitSignupForm() {
     const profilePicInput = document.getElementById("signup-profile-pic");
 
     if (!usernameInput.value || !passwordInput.value || !emailInput.value) {
-        showToast("Please fill in all required fields.", "error");
+        showToast("Please fill in all required fields.", "login", "error");
         return;
     }
 
