@@ -175,6 +175,11 @@ function handleMapClick(e) {
 }
 
 function toggleModal(lat, lng, location = null) {
+    const loggedInUser = getLoggedInUser();
+    if (!loggedInUser){
+        showToast("must be logged in to interact with a location","map");
+        return;
+    }
     const overlay = document.getElementById("modal-overlay");
 
     if (overlay.classList.contains("is-open")) {

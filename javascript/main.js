@@ -189,8 +189,9 @@ document.querySelector(".input-remove-media").addEventListener("click", () => {
 });
 
 function Main() {
-    updateMainContent()
-    updateProfilePicture()
+    checkForLoggedInUser();
+    updateMainContent();
+    updateProfilePicture();
     //renderCommunities()
 }
 
@@ -358,6 +359,15 @@ async function updateMainContent() {
     const posts = await queryFromBackend(currentSort)
 
     renderPosts(posts)
+    if (loggedUser) {
+        document.getElementById("input-post-profile-picture").src = loggedUser.profile_pic_url;
+    }
+}
 
-    document.getElementById("input-post-profile-picture").src = loggedUser.profile_pic_url;
+function checkForLoggedInUser() {
+    const loggedInUser = getLoggedInUser();
+    if (!loggedInUser) {
+        const postCreationElement = document.getElementById("post-creation-box");
+        postCreationElement.style.display = "none";
+    }
 }
