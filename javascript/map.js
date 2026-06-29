@@ -175,11 +175,6 @@ function handleMapClick(e) {
 }
 
 function toggleModal(lat, lng, location = null) {
-    const loggedInUser = getLoggedInUser();
-    if (!loggedInUser){
-        showToast("must be logged in to interact with a location","map");
-        return;
-    }
     const overlay = document.getElementById("modal-overlay");
 
     if (overlay.classList.contains("is-open")) {
@@ -246,7 +241,7 @@ async function confirmLocation() {
             if (!marker) return;
 
             // update position
-            marker.setLatLng([currentSelectedLat, currentSelectedLng]);
+            marker.setLatLng([updatedLocation.lat, updatedLocation.lng]);
 
             // update popup
             marker.setPopupContent(
@@ -281,6 +276,7 @@ async function confirmLocation() {
         markerMap.set(newLocationMarker.id, newLocationMarker);
 
         attachMarkerHoverHandlers(newLocationMarker);
+        attachMarkerEditHandler(newLocationMarker, newLocationMarker.id, newLocation);
 
         console.log("Created new marker:", newLocation.id);
         toggleModal()
@@ -353,6 +349,19 @@ function attachMarkerHoverHandlers(marker) {
     });
 }
 
+// Opens the edit modal for a marker on double-click. Shared between
+// renderExistingPins() (locations loaded from the backend) and
+// confirmLocation()'s create branch (a pin just placed this session),
+// so a freshly created pin is immediately editable without a refresh.
+function attachMarkerEditHandler(marker, markerId, loc) {
+    marker.on("dblclick", () => {
+        if (!markerClickEnabled) return;
+
+        currentEditingLocationId = markerId;
+        toggleModal(loc.lat, loc.lng, loc);
+    });
+}
+
 export function renderExistingPins() {
     // Loop through your database records collection to mount existing array structures
     clearExistingPins();
@@ -369,13 +378,7 @@ export function renderExistingPins() {
         markerMap.set(markerId, marker);
 
         attachMarkerHoverHandlers(marker);
-
-        marker.on("dblclick", (e) => {
-            if (!markerClickEnabled) return;
-
-            currentEditingLocationId = markerId;
-            toggleModal(loc.lat, loc.lng, loc);
-        });
+        attachMarkerEditHandler(marker, markerId, loc);
     });
 }
 

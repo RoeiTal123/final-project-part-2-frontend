@@ -103,15 +103,16 @@ export async function createLocationAndPutInBackend() {
         );
 
         console.log("CREATED LOCATION: ", createdLocation);
+
+        newLocation.id = createdLocation.locationid; // attach the real DB id
         locationsOfUser.push(newLocation)
-        renderExistingPins(locationsOfUser)
         showToast(`created location`, "map");
 
         nameEl.value = "";
         descEl.value = "";
         resetMediaState();
 
-        return createdLocation;
+        return newLocation;
     }
     catch (err) {
         console.log("Backend create failed: ", err);
