@@ -5,44 +5,60 @@
     <title>Cat Sanctuary</title>
     <link rel="stylesheet" href="../design/pages/login.css">
     <link rel="stylesheet" href="../design/subelements/toast.css">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../javascript/login.js" type="module"></script>
 </head>
 
 <body>
     <div class="body">
         <div class="login-window" id="loginWindow">
-            <form id="loginForm">
+            <form id="loginForm" action="#" method="post" autocomplete="off">
                 <section>
                     <h1>Login</h1>
+
+                    <label for="login-username">Username</label>
                     <input class="input" type="text" id="login-username" name="username" pattern="[a-zA-Z0-9]+" placeholder="catlover123" required><br><br>
+
+                    <label for="login-password">Password</label>
                     <input class="input" type="password" id="login-password" minlength="8" name="password" placeholder="password123" required><br><br>
-                    
+
                     <button class="submit-btn" type="button" onclick="submitLoginForm()">OK</button>
-                    
+
                     <div class="toggle-container">
                         <p>Don't have an account? <a href="#" onclick="showSignup(event)">Sign up here</a></p>
                     </div>
                 </section>
             </form>
         </div>
-        
+
         <div class="login-window hidden" id="signupWindow">
-            <form id="signupForm">
+            <form id="signupForm" action="#" method="post" autocomplete="off">
                 <section>
                     <h1>Sign Up</h1>
+
+                    <label for="signup-firstname">First name</label>
                     <input class="input" type="text" oninput="removeNumbers(event)" id="signup-firstname" placeholder="first name" required><br><br>
+
+                    <label for="signup-lastname">Family name</label>
                     <input class="input" type="text" oninput="removeNumbers(event)" id="signup-lastname" placeholder="family name" required><br><br>
-                    
+
+                    <label for="signup-email">Email</label>
                     <input class="input" type="email" id="signup-email" placeholder="email: local@domain.top" required><br><br>
+
+                    <label for="signup-username">Username</label>
                     <input class="input" type="text" id="signup-username" placeholder="username" required><br><br>
+
+                    <label for="signup-password">Password</label>
                     <input class="input" type="password" id="signup-password" minlength="8" placeholder="password" required><br><br>
+
+                    <label for="signup-birthday">Birthday</label>
                     <input class="input" type="date" id="signup-birthday" required><br><br>
-                    <input class="input" type="url" id="signup-profile-pic" placeholder="profile picture url (optional)"><br><br>
-                    
+
+                    <label for="signup-profile-pic">Profile picture (optional)</label>
+                    <input class="input" type="file" id="signup-profile-pic" accept="image/*">
+                    <img id="signup-profile-pic-preview" class="profile-pic-preview hidden" alt="Profile picture preview"><br><br>
+
                     <button class="submit-btn" type="button" onclick="submitSignupForm()">OK</button>
-                    
+
                     <div class="toggle-container">
                         <p>Already have an account? <a href="#" onclick="showLogin(event)">Log in here</a></p>
                     </div>

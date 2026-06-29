@@ -26,6 +26,10 @@ body {
 }
 
 .map-container.pin-ready {
+    cursor: none;
+}
+
+.map-container.over-pin {
     cursor: pointer;
 }
 
@@ -168,8 +172,8 @@ label .svg:hover {
     background-color: var(--blue-two);
     border: 2px solid var(--white);
     border-radius: 50% 50% 50% 0;
-    transform: translate(25px, -100%) rotate(-45deg);
-    transform-origin: bottom left;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    transform-origin: center;
     pointer-events: none;
     z-index: 1000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

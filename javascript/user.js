@@ -17,19 +17,19 @@ export async function queryUsersFromBackend() {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const data = await response.json();
-        users = [...users]
+        users = [...data]
         console.log("🔥 BACKEND USERS:", data);
         return data;
     } catch (err) {
         console.error("❌ Backend user query failed:", err);
-        showToast("Failed to load users", "error");
+        showToast("Failed to load users", "login", "error");
         return null;
     }
 }
 
 export async function addUser(userDetails) {
     try {
-        const response = await fetch(BASE_URL, {
+        const response = await fetch(`${BASE_URL}users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -45,11 +45,11 @@ export async function addUser(userDetails) {
             throw new Error(data.error || "Registration failed");
         }
 
-        showToast("Registration successful!", "success");
+        showToast("Registration successful!", "login", "success");
         return data;
     } catch (err) {
         console.error("❌ Failed to register user:", err);
-        showToast(err.message, "error");
+        showToast(err.message, "login", "error");
         return null;
     }
 }
@@ -71,11 +71,11 @@ export async function checkForUser(username, password) {
             throw new Error(data.error || "Invalid credentials");
         }
 
-        showToast("Login successful!", "success");
+        showToast("Login successful!", "login", "success");
         return data;
     } catch (err) {
         console.error("❌ Login failed:", err);
-        showToast(err.message, "error");
+        showToast(err.message, "login", "error");
         return null;
     }
 }

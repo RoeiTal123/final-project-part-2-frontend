@@ -24,6 +24,7 @@ const markerMap = new Map();
 // Idle-hover pin preview
 const IDLE_READY_DELAY = 200; // ms — how long the mouse must sit still before showing the preview pin
 let idleTimer = null;
+let isOverExistingPin = false; // true while the cursor is over a real marker
 
 const pinPreview = document.getElementById("pin-preview");
 const mapContainer = document.getElementById("map-container");
@@ -124,6 +125,11 @@ function initMap() {
 
         const { x, y } = e.containerPoint;
         idleTimer = setTimeout(() => {
+            // Don't show the preview pin (or hide the cursor) while
+            // hovering an existing marker — that marker already has
+            // its own pointer cursor via the over-pin class.
+            if (isOverExistingPin) return;
+
             pinPreview.style.left = `${x}px`;
             pinPreview.style.top = `${y}px`;
             pinPreview.style.display = "block";
@@ -269,6 +275,8 @@ async function confirmLocation() {
 
         markerMap.set(newLocationMarker.id, newLocationMarker);
 
+        attachMarkerHoverHandlers(newLocationMarker);
+
         console.log("Created new marker:", newLocation.id);
         toggleModal()
         resetMediaState();
@@ -322,6 +330,24 @@ export function clearExistingPins() {
     markerMap.clear();
 }
 
+// Hides/cancels the idle pin-preview and flags that the cursor is over
+// a real marker, so the map's mousemove handler won't draw the preview
+// pin (or hide the system cursor) on top of an existing pin.
+function attachMarkerHoverHandlers(marker) {
+    marker.on("mouseover", () => {
+        isOverExistingPin = true;
+        clearTimeout(idleTimer);
+        pinPreview.style.display = "none";
+        mapContainer.classList.remove("pin-ready");
+        mapContainer.classList.add("over-pin");
+    });
+
+    marker.on("mouseout", () => {
+        isOverExistingPin = false;
+        mapContainer.classList.remove("over-pin");
+    });
+}
+
 export function renderExistingPins() {
     // Loop through your database records collection to mount existing array structures
     clearExistingPins();
@@ -336,6 +362,8 @@ export function renderExistingPins() {
         marker.id = markerId
         marker.loc = { ...loc };
         markerMap.set(markerId, marker);
+
+        attachMarkerHoverHandlers(marker);
 
         marker.on("dblclick", (e) => {
             if (!markerClickEnabled) return;

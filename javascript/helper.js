@@ -1,5 +1,6 @@
 import { getLoggedInUser } from "./user.js"
 
+const DEFAULT_AVATAR = "../design/images/Profile Button.png";
 
 export function saveArrayToStorage(key, array) {
   localStorage.setItem(key, JSON.stringify(array))
@@ -73,5 +74,5 @@ export function updateProfilePicture() {
 
     if (!profileImg || !loggedInUser) return
 
-    profileImg.src = loggedInUser.profile_pic_url
+    profileImg.src = loggedInUser.profile_pic_url || DEFAULT_AVATAR
 }
