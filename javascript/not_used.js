@@ -167,3 +167,5 @@ function getUserRole(community, userId) {
     if (community.members.includes(userId)) return "member"
     return null
 }
+
+// href="../htmls/profile.html?id=${post.user_id}" 

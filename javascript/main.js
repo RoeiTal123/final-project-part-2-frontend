@@ -242,7 +242,7 @@ export async function renderPosts(list) { // function that renders updates posts
             return `
             <div class="post-box">
                 <div class="post-header">
-                           <a href="../htmls/profile.html?id=${post.user_id}" class="post-user">
+                           <a class="post-user">
                            <img src="${poster.profile_pic_url}" />
                            </a> 
                            <div class="post-header-right">
