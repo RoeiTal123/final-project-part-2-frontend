@@ -1,14 +1,14 @@
-import { showToast } from "./toast.js"
-import { generateId } from "./helper.js"
-import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from "./helper.js"
+import { showToast } from "./toast.js";
+import { generateId } from "./helper.js";
+import { saveArrayToStorage, getArrayFromStorage, uploadToCloudinary } from "./helper.js";
 import { httpService } from "./communication.js";
 import { renderPosts } from "./main.js";
 import { selectedMediaFile, selectedMediaType, clearSelectedMedia, resetMediaState, mediaAction } from "./media-state.js";
 import { getLoggedInUser } from "./user.js";
 
-let postsKey = "posts"
+let postsKey = "posts";
 
-let posts = []
+let posts = [];
 
 // cached query result (optional optimization)
 let cache = {
@@ -162,8 +162,8 @@ export async function editPostAndPutInBackend(postId) {
         return null;
     }
 
-    let mediaUrl = originalPost.media_url
-    let mediaType = originalPost.media_type
+    let mediaUrl = originalPost.media_url;
+    let mediaType = originalPost.media_type;
 
     // copy + overwrite
     try {
@@ -268,7 +268,7 @@ export async function deletePostFromBackend(postId) {
 }
 
 export async function thePosts() {
-    if (!posts) return null
+    if (!posts) return null;
     return posts;
 }
 
@@ -324,13 +324,13 @@ export function query(value) {
 // CREATE POST
 // =====================
 export function createPost() {
-    const titleEl = document.getElementById("post-title-input")
-    const descEl = document.getElementById("post-description-input")
+    const titleEl = document.getElementById("post-title-input");
+    const descEl = document.getElementById("post-description-input");
 
-    const title = titleEl.value.trim()
-    const desc = descEl.value.trim()
+    const title = titleEl.value.trim();
+    const desc = descEl.value.trim();
 
-    const loggedUser = getLoggedInUser()
+    const loggedUser = getLoggedInUser();
 
     if (!title) {
         showToast("missing title", "main");
@@ -347,10 +347,10 @@ export function createPost() {
         user_id: loggedUser.id,
         title,
         description: desc,
-        mediaType: null,
-        mediaUrl: null,
+        media_type: null,
+        media_url: null,
         likedByUsers: [],
-        createdAt: Date.now()
+        created_at: Date.now()
     };
 
     posts.push(newPost);
@@ -373,7 +373,7 @@ export function createPost() {
 // =====================
 export function deletePost(postId = "") {
 
-    const loggedUser = getLoggedInUser()
+    const loggedUser = getLoggedInUser();
     if (!postId) {
         showToast("invalid post", "main");
         return;

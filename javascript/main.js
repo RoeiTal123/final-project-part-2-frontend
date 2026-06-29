@@ -1,4 +1,4 @@
-import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture } from "./helper.js"
+import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updateProfilePicture, getTimeAgo } from "./helper.js"
 import { showToast, hideToast } from "./toast.js"
 import { clearSelectedMedia, resetMediaState, setSelectedMedia } from "./media-state.js";
 import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from "./post.js"
@@ -192,9 +192,7 @@ function Main() {
     checkForLoggedInUser();
     updateMainContent();
     updateProfilePicture();
-    //renderCommunities()
 }
-
 
 function getFalloffDistance() {
     // Reads --glow-falloff-distance straight from CSS so this number
@@ -227,8 +225,6 @@ function getNearestPostIntensity(x, y) {
 }
 
 export async function renderPosts(list) { // function that renders updates posts
-    // console.log(list)
-    console.log("posts rendered")
     const postsContainer = document.getElementById("posts-container") // creates a 'pointer' to the container so we could interract with it
     if (list != null) {
 
@@ -291,31 +287,8 @@ export async function renderPosts(list) { // function that renders updates posts
                 </div>
             </div>`;
         }).join("")
+        console.log("posts rendered");
     }
-}
-
-function getTimeAgo(timestamp) {
-    const now = Date.now()
-    const diffMs = now - timestamp
-
-    const seconds = Math.floor(diffMs / 1000)
-    const minutes = Math.floor(seconds / 60)
-    const hours = Math.floor(minutes / 60)
-    const days = Math.floor(hours / 24)
-
-    if (seconds < 60) {
-        return `${seconds}s ago`
-    }
-
-    if (minutes < 60) {
-        return `${minutes}m ago`
-    }
-
-    if (hours < 24) {
-        return `${hours}h ago`
-    }
-
-    return `${days}d ago`
 }
 
 function isLiked(postId, userId = userId) { // checks if post with id = postId is liked by user with id = Userid
@@ -324,15 +297,13 @@ function isLiked(postId, userId = userId) { // checks if post with id = postId i
 }
 
 function likePost(postId, userId) {
-    console.log("like")
 
-    const loggedUser = getLoggedInUser()
+    const loggedUser = getLoggedInUser();
     if (!postId) return;
 
     toggleLike(postId, loggedUser.id);
 
-    const currentSort =
-        new URLSearchParams(window.location.search).get("sort") || "new";
+    const currentSort = new URLSearchParams(window.location.search).get("sort") || "new";
 
     const postsToRender = query(currentSort);
 
