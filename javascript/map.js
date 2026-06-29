@@ -2,7 +2,7 @@ import { updateProfilePicture } from "./helper.js";
 import { createLocationAndPutInBackend, deleteLocationFromBackend, editLocationAndPutInBackend, locationByIdFromBackend, locationsOfUser, queryFromBackend } from "./location.js";
 import { clearSelectedMedia, resetMediaState, setSelectedMedia } from "./media-state.js";
 import { showToast } from "./toast.js";
-import { getLoggedInUser, queryUsersFromBackend, users } from "./user.js";
+import { getLoggedInUser, logoutUser, queryUsersFromBackend, users } from "./user.js";
 
 document.addEventListener("DOMContentLoaded", Main);
 
@@ -77,6 +77,13 @@ document.getElementById("location-input-remove-media").addEventListener("click",
     clearSelectedMedia();
     input.value = "";
     label.innerHTML = originalLabelHTML;
+});
+
+document.addEventListener("click", (e) => {
+    const logoutBtn = e.target.closest(".logout-button, .logout-button-mobile");
+    if (!logoutBtn) return;
+
+    logoutUser();
 });
 
 async function Main() {
