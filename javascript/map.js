@@ -205,7 +205,6 @@ function toggleModal(lat, lng, location = null) {
     }
 
     if (location) {
-        console.log(location)
         nameElement.value = location.location_name;
         descriptionElement.value = location.description;
         if (location.feeders) {
@@ -357,9 +356,7 @@ async function renderFeeders() {
         const location = locationsOfUser.find(loc => loc.id === realId)
         const users = await queryUsersFromBackend();
         feederListEl.innerHTML = location.feeders.map(userId => {
-            console.log("users: " + users)
             const user = users.find(u => u.id === userId);
-            console.log("user: " + user)
             if (!user) return "";
 
             const className =
