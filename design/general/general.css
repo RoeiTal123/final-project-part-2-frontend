@@ -197,6 +197,7 @@ textarea{
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex: 1;
     width: 100%;
     background-image: url(https://res.cloudinary.com/dukionlns/image/upload/v1782123393/Background_bkb2s7.png);
     background-position: center;
