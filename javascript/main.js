@@ -2,7 +2,7 @@ import { saveArrayToStorage, getArrayFromStorage, SQLTimestampToTimestamp, updat
 import { showToast, hideToast } from "./toast.js"
 import { clearSelectedMedia, resetMediaState, setSelectedMedia } from "./media-state.js";
 import { createPost, deletePost, toggleLike, query, queryFromBackend, postByIdFromBackend, createPostAndPutInBackend, editPostAndPutInBackend, deletePostFromBackend, thePosts } from "./post.js"
-import { getLoggedInUser, queryUsersFromBackend } from "./user.js";
+import { getLoggedInUser, queryUsersFromBackend, logoutUser } from "./user.js";
 
 document.addEventListener("DOMContentLoaded", Main)
 const radios = document.querySelectorAll('input[name="sort"]');
@@ -53,6 +53,13 @@ document.addEventListener("click", async (e) => {
 
     const posts = await queryFromBackend(currentSort);
     renderPosts(posts);
+});
+
+document.addEventListener("click", (e) => {
+    const logoutBtn = e.target.closest(".logout-button, .logout-button-mobile");
+    if (!logoutBtn) return;
+
+    logoutUser();
 });
 
 document.addEventListener("click", async (e) => {
