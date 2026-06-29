@@ -134,8 +134,6 @@ export async function editLocationAndPutInBackend(locationId) {
         return
     }
 
-    console.log(locationsOfUser)
-    console.log(locationId)
     const originalIndex = locationsOfUser.findIndex(l => l.id === locationId);
     if (originalIndex === -1) return null;
 
