@@ -23,11 +23,7 @@
     "url": "https://github.com/RoeiTal123/final-project-part-2-frontend/issues"
   },
   "homepage": "https://github.com/RoeiTal123/final-project-part-2-frontend#readme",
-  "dependencies": {
-    "axios": "^1.18.0"
-  },
   "devDependencies": {
-    "gh-pages": "^6.3.0",
     "vite": "^8.0.16"
   }
 }
