@@ -289,11 +289,6 @@
     padding: 16px;
 }
 
-.input-post-title{
-    height: fit-content;
-    flex: 0.5;
-}
-
 .input-post-profile-picture{
     height: 64px;
     width: 64px;
