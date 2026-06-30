@@ -74,7 +74,7 @@ document.addEventListener("click", async (e) => {
         document.getElementById("post-title-input").value = post.title;
         document.getElementById("post-description-input").value = post.description;
 
-        mediaBox.innerHTML = ">media will be here";
+        mediaBox.innerHTML = "No media selected";
 
         if (post.media_url) {
             if (post.media_type === "image") {
@@ -192,7 +192,7 @@ input.addEventListener("change", (e) => {
 document.querySelector(".input-remove-media").addEventListener("click", () => {
     clearSelectedMedia()
     input.value = "";
-    mediaBox.innerHTML = "";
+    mediaBox.innerHTML = "No media selected";
 });
 
 function Main() {
