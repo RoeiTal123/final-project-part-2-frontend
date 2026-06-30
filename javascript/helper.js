@@ -1,6 +1,6 @@
 import { getLoggedInUser } from "./user.js"
 
-const DEFAULT_AVATAR = "../design/images/Profile Button.png";
+const DEFAULT_AVATAR = "https://res.cloudinary.com/dukionlns/image/upload/v1782123407/Profile_Button_j0t29p.png";
 
 export function saveArrayToStorage(key, array) {
   localStorage.setItem(key, JSON.stringify(array))

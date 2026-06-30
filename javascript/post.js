@@ -113,7 +113,7 @@ export async function createPostAndPutInBackend() {
         console.log("CREATED POST: ", createdPost);
         posts.push(newPost)
         renderPosts(posts)
-        showToast(`created post`, "main");
+        showToast(`created post`, "main", );
 
         titleEl.value = "";
         descEl.value = "";
@@ -365,7 +365,7 @@ export function createPost() {
     titleEl.value = "";
     descEl.value = "";
 
-    showToast(`created post [${newPost.id}]`, "main");
+    showToast(`created post [${newPost.id}]`, "main", "success");
 }
 
 // =====================

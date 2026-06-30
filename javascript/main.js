@@ -338,9 +338,14 @@ async function updateMainContent() {
     const posts = await queryFromBackend(currentSort)
 
     renderPosts(posts)
-    if (loggedUser) {
+    if (loggedUser && loggedUser.profile_pic_url != null) {
         document.getElementById("input-post-profile-picture").src = loggedUser.profile_pic_url;
     }
+    else
+    {
+        document.getElementById("input-post-profile-picture").src = "https://res.cloudinary.com/dukionlns/image/upload/v1782123407/Profile_Button_j0t29p.png";
+    }
+
 }
 
 function checkForLoggedInUser() {
