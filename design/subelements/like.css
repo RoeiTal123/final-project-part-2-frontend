@@ -1,63 +1,17 @@
 .like-btn {
-    position: relative;
     display: inline-block;
+    cursor: pointer;
 }
 
 .like-btn svg {
     display: block;
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    transform: scale(1);
-    cursor: pointer;
-    position: relative;
-    z-index: 2;
+    fill: none; /* Empty state */
+    stroke: #333; /* Dark outline for empty state */
+    transition: fill 0.2s ease, stroke 0.2s ease; /* Smooth color swap */
 }
 
-.like-btn:active svg {
-    transform: scale(1.25);
-}
-
+/* Crimson color fill when active */
 .like-btn.is-liked svg {
-    animation: heart-pop-on-load 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-}
-
-.like-btn::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    width: 24px; 
-    height: 24px;
-    border-radius: 50%;
-    border: 8px solid var(--red-two, #ff2a75); 
-    opacity: 0;
-    z-index: 1;
-    pointer-events: none;
-    box-sizing: border-box;
-}
-
-.like-btn.is-liked::after {
-    animation: ring-ripple 0.4s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-}
-
-@keyframes ring-ripple {
-    0% {
-        transform: translate(-50%, -50%) scale(0);
-        border-width: 12px; 
-        opacity: 1;
-    }
-    40% {
-        opacity: 1; 
-    }
-    100% {
-        transform: translate(-50%, -50%) scale(2.2); 
-        border-width: 0px; 
-        opacity: 0; 
-    }
-}
-
-@keyframes heart-pop-on-load {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.35); }
-    100% { transform: scale(1); }
+    fill: var(--red-two, #ff2a75);
+    stroke: var(--red-two, #ff2a75);
 }

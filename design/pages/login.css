@@ -109,7 +109,7 @@ label {
 
 .submit-btn:hover {
   background-color: var(--accent-color); 
-  color: var(--primary-color);           
+  color: var(--black-one);        
 }
 
 .submit-btn:active {

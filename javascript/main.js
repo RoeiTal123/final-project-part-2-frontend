@@ -138,6 +138,7 @@ document.addEventListener("click", (e) => {
     const loggedUser = getLoggedInUser()
 
     toggleLike(postId, loggedUser.id);
+    likeBtn.classList.toggle("is-liked");
 });
 
 radios.forEach(radio => {

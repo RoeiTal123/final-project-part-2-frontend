@@ -1,69 +1,5 @@
 @import "../general/general.css";
 
-/* --- CONTROLS --- */
-:root {
-    --glow-hue: 200;                        /* Hue (degrees) shared by glow + border tint */
-    --glow-sat: 100%;                      /* Saturation shared by glow + border tint */
-    --glow-light: 51%;                     /* Lightness shared by glow + border tint */
-
-    --glow-color: hsla(var(--glow-hue), var(--glow-sat), var(--glow-light), .8);        /* Core glow color */
-    --glow-border-tint: var(--accent-color);  /* Card border tint on hover */
-
-    --glow-speed: 0s;                      /* Fade-in/out + resize animation latency */
-
-    --glow-falloff-distance: 250px;
-
-    --glow-blur-min: 60px;
-    --glow-blur-max: 140px;
-    --glow-spread-min: 10px;
-    --glow-spread-max: 50px;
-
-    /* Derived deltas, used by the calc() below — keeps the math readable */
-    --glow-blur-delta: calc(var(--glow-blur-max) - var(--glow-blur-min));
-    --glow-spread-delta: calc(var(--glow-spread-max) - var(--glow-spread-min));
-
-    /* Opacity floor/ceiling. Min > 0 gives a faint always-on presence;
-       leave at 0 for the glow to fully disappear far from any post. */
-    --glow-opacity-min: 0;
-    --glow-opacity-max: 1;
-
-    /* Global pixel fallbacks for initial coordinate positioning */
-    --mouse-x: 0px;
-    --mouse-y: 0px;
-
-    /* Proximity-driven strength: 0 (far from any post) to 1 (right over one).
-       Updated from JS based on distance to the nearest post-box. */
-    --glow-intensity: 0;
-}
-
-/* --- GLOBAL CURSOR GLOW LAYER --- */
-.cursor-glow {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-}
-
-.cursor-glow::before {
-    content: "";
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    top: var(--mouse-y);
-    left: var(--mouse-x);
-    border-radius: 50%;
-    box-shadow: 0 0
-        calc(var(--glow-blur-min) + var(--glow-blur-delta) * var(--glow-intensity))
-        calc(var(--glow-spread-min) + var(--glow-spread-delta) * var(--glow-intensity))
-        var(--glow-color);
-    opacity: calc(var(--glow-opacity-min) + (var(--glow-opacity-max) - var(--glow-opacity-min)) * var(--glow-intensity));
-    transition: opacity var(--glow-speed) ease, box-shadow var(--glow-speed) ease;
-}
-
 @media (min-width: 1024px) {
     .cat-communities-box {
         display: flex;
@@ -162,8 +98,10 @@
 
 .post-filter{
     display: flex;
-    margin-block-start: 16px;
+    margin-block-start: 35px;
     gap: 16px;
+    background-color: var(--white);
+    border-radius: 16px;
 }
 
 .cat-posts-box {

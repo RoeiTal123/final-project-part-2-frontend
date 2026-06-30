@@ -80,7 +80,7 @@ textarea{
 
 button, input[type="file"]::file-selector-button {
     background-color: var(--primary-color);
-    color: var(--gray-six);
+    color: var(--gray-two);
     border: none;
     border-radius: 22px;
     font-weight: bold;
