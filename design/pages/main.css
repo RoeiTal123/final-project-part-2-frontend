@@ -97,6 +97,7 @@
 }
 
 .post-filter{
+    border: 5px solid var(--gray-four);
     display: flex;
     justify-content: space-between;
     padding: 10px;
@@ -267,6 +268,7 @@
 }
 
 .post-creation-box{
+    border: 5px solid var(--gray-four);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
