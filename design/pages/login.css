@@ -74,26 +74,6 @@ label {
     }
 }
 
-.input{
-  width: 100%;
-  box-sizing: border-box;
-  border: none; 
-  border-bottom: 2px solid var(--accent-color);
-  transition: border-bottom 0.2s ease, transform 0.1s ease;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.input:hover{
-  border: none; 
-  border-bottom: 2px solid var(--primary-color);
-}
-
-.input:focus{
-  outline: none;
-  border-bottom: 2px solid var(--primary-color);
-  background-color: rgba(0, 0, 0, 0.02);
-}
-
 .textarea-container {
   position: relative;
   width: 100%;
